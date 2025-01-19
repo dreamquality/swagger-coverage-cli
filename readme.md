@@ -1,3 +1,6 @@
+![npm](https://img.shields.io/npm/v/swagger-coverage-cli?color=blue&label=npm&logo=npm)  
+![Tests](https://github.com/dreamquality/swagger-coverage-cli/actions/workflows/test.yml/badge.svg)
+
 # Swagger Coverage CLI
 
 > **A command-line utility to compare your OpenAPI/Swagger specification with a Postman collection and calculate **API test coverage**. Generates a human-readable HTML report.**
@@ -137,6 +140,9 @@ Unmatched operations:
 2. **HTML Report**:
    - A file named `coverage-report.html` (or the name you provided with `--output`) is generated.
    - Open it in your browser to see a table of matched/unmatched operations with color highlights.
+
+![main](https://github.com/dreamquality/swagger-coverage-cli/blob/main/assets/main.png?raw=true)
+![table](https://github.com/dreamquality/swagger-coverage-cli/blob/main/assets/table.png?raw=true)
 
 ---
 

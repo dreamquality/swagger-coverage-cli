@@ -1,0 +1,42 @@
+{
+  "name": "swagger-coverage-cli",
+  "version": "1.0.0",
+  "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections.",
+  "main": "cli.js",
+  "bin": {
+    "swagger-coverage-cli": "./cli.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "swagger",
+    "openapi",
+    "coverage",
+    "cli",
+    "postman",
+    "testing"
+  ],
+  "author": "Alex <dreamquality337@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dreamquality/swagger-coverage-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dreamquality/swagger-coverage-cli/issues"
+  },
+  "homepage": "https://github.com/dreamquality/swagger-coverage-cli#readme",
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.1",
+    "ajv": "^8.17.1",
+    "commander": "^13.0.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

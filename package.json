@@ -1,6 +1,6 @@
 {
   "name": "swagger-coverage-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections.",
   "main": "cli.js",
   "bin": {

@@ -3,8 +3,8 @@
 
 # Swagger Coverage CLI
 
-> **A command-line utility to compare your OpenAPI/Swagger specification with a Postman collection and calculate **API test coverage**. Generates a human-readable HTML report. 
-Checkut the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
+> **A command-line utility to compare your OpenAPI/Swagger specification with a Postman collection and calculate **API test coverage**. Generates a human-readable HTML report.
+> Checkut the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
 
 ## Table of Contents
 
@@ -13,6 +13,7 @@ Checkut the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
 3. [How It Works (Diagram)](#how-it-works-diagram)
 4. [Installation & Requirements](#installation--requirements)
 5. [Getting Started](#getting-started)
+
    - [1. Prepare Your Files](#1-prepare-your-files)
    - [2. Run the CLI](#2-run-the-cli)
    - [3. Check the Coverage Report](#3-check-the-coverage-report)
@@ -75,11 +76,11 @@ flowchart LR
 ### Installation
 
 1. **Clone** or **download** this repository.
-
 2. **Install dependencies** by running:
 
 ```bash
-npm install
+npm install -g swagger-coverage-cli
+
 
 ```
 
@@ -101,14 +102,16 @@ You will need:
 Use the following command:
 
 ```bash
-node cli.js <swaggerFile> <postmanCollection> [options]
+npm swagger-coverage-cli <swaggerFile> <postmanCollection> [options]
+
 
 ```
 
 Example:
 
 ```bash
-node cli.js openapi.yaml collection.json --verbose --strict-query --strict-body
+npm swagger-coverage-cli openapi.yaml collection.json --verbose --strict-query --strict-body
+
 
 ```
 
@@ -118,6 +121,13 @@ node cli.js openapi.yaml collection.json --verbose --strict-query --strict-body
 - `--strict-query`: Enforce strict checks on query parameters (e.g., required params, `enum`, `pattern`, etc.).
 - `--strict-body`: Verify that `application/json` request bodies in the spec match raw JSON bodies in Postman requests.
 - `--output <file>`: Customize the name of the HTML report file (default is `coverage-report.html`).
+
+### Run via NPM Script
+
+```bash
+npm swagger-coverage-cli -- <swaggerFile> <postmanCollection> [options]
+
+```
 
 ### 3. Check the Coverage Report
 
@@ -136,6 +146,7 @@ Unmatched operations:
 - [PUT] /items/{id} (statusCode=400)
 ...
 
+
 ```
 
 2. **HTML Report**:
@@ -153,16 +164,20 @@ Unmatched operations:
 
 1. **HTTP Method** matches exactly (`GET`, `POST`, `PUT`, `DELETE`, etc.).
 2. **Path**:
+
    - The path pattern from Swagger (e.g., `/users/{id}`) is converted to a regex (like `^/users/[^/]+$`).
    - The Postman request URL (minus any base URL placeholders like `{{baseUrl}}`) must match that regex.
 
 3. **Status Code**:
+
    - If the spec operation has a specific status code (e.g., `200`, `404`), the CLI checks the Postman test scripts to see if that status code is asserted (e.g., `pm.response.to.have.status(200)`).
 
 4. **Query Parameters** (only if `--strict-query` is enabled):
+
    - If the spec says a query parameter is required and has certain constraints (e.g., `enum`, `pattern`, `type`), the tool verifies that the Postman request includes that parameter and meets the constraints.
 
 5. **Request Body** (only if `--strict-body` is enabled):
+
    - If the spec says `requestBody` includes `application/json`, the CLI checks if the Postman request body is raw JSON and can be parsed without errors.
 
 If all criteria are satisfied, the operation is **matched** (covered). Otherwise, it’s reported as **unmatched**.

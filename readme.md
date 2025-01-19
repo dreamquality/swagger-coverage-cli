@@ -3,13 +3,9 @@
 
 # Swagger Coverage CLI
 
-<<<<<<< HEAD
-> **A command-line utility to compare your OpenAPI/Swagger specification with a Postman collection and calculate **API test coverage**. Generates a human-readable HTML report.
-> Checkut the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
-=======
 > **A command-line utility to compare your OpenAPI/Swagger specification with a Postman collection and calculate **API test coverage**. Generates a human-readable HTML report. 
 Check out the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
->>>>>>> 18b37039eaa1b2a84b8aab2cf5271c71698c283c
+
 
 ## Table of Contents
 

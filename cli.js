@@ -9,6 +9,7 @@ const { loadAndParseSpec, extractOperationsFromSpec } = require("./lib/swagger")
 const { loadPostmanCollection, extractRequestsFromPostman } = require("./lib/postman");
 const { matchOperationsDetailed } = require("./lib/match");
 const { generateHtmlReport } = require("./lib/report");
+const { loadExcelSpec } = require("./lib/excel");
 
 const program = new Command();
 
@@ -28,21 +29,46 @@ program
     try {
       const { verbose, strictQuery, strictBody, output } = options;
 
-      // 1. Load & parse spec
-      const spec = await loadAndParseSpec(swaggerFile);
-      if (verbose) {
-        console.log(
-          "Specification loaded successfully:",
-          spec.info.title,
-          spec.info.version
-        );
+      const ext = path.extname(swaggerFile).toLowerCase();
+      const excelExtensions = [".xlsx", ".xls", ".csv"];
+      let specOperations;
+      let specName; // Add this variable
+
+      if (excelExtensions.includes(ext)) {
+        // Parse Excel
+        specOperations = loadExcelSpec(swaggerFile);
+        specName = path.basename(swaggerFile); // Set name for Excel files
+      } else {
+        // Original Swagger flow
+        const spec = await loadAndParseSpec(swaggerFile);
+        specName = spec.info.title; // Set name for Swagger files
+        if (verbose) {
+          console.log(
+            "Specification loaded successfully:",
+            specName,
+            spec.info.version
+          );
+        }
+        specOperations = extractOperationsFromSpec(spec, verbose);
       }
 
-      // 2. Extract spec operations
-      const specOperations = extractOperationsFromSpec(spec, verbose);
+      // Ensure Postman file exists
+      if (!fs.existsSync(postmanFile)) {
+        throw new Error(`Postman file not found: ${postmanFile}`);
+      }
 
-      // 3. Load Postman collection
-      const postmanData = loadPostmanCollection(postmanFile);
+      // Safely parse Postman JSON
+      let postmanData;
+      try {
+        const rawPostman = fs.readFileSync(postmanFile, "utf8");
+        if (!rawPostman.trim()) {
+          throw new Error("Postman file is empty.");
+        }
+        postmanData = JSON.parse(rawPostman);
+      } catch (err) {
+        throw new Error(`Unable to parse Postman JSON: ${err.message}`);
+      }
+
       if (verbose) {
         console.log(
           `Postman collection loaded successfully: "${postmanData.info.name}"`
@@ -96,13 +122,13 @@ program
         });
       }
 
-      // 7. Generate HTML report (enhanced with nested tables, charts, etc.)
+      // 7. Generate HTML report with specName instead of spec.info.title
       const html = generateHtmlReport({
         coverage,
-        coverageItems, // used by the expand/collapse table
+        coverageItems,
         meta: {
           timestamp: new Date().toLocaleString(),
-          specName: spec.info.title,
+          specName, // Use specName here
           postmanCollectionName: postmanData.info.name,
         },
       });

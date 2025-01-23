@@ -1,0 +1,33 @@
+
+{
+  "info": {
+    "name": "Partial Test Collection 2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Delete Bar",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "https://example.com/api/bar",
+          "protocol": "https",
+          "host": ["example","com"],
+          "path": ["api","bar"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {",
+              "  pm.response.to.have.status(204);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+
+Binary XLSX content omitted. Example columns:
+// METHOD | URI      | NAME           | STATUS CODE | BODY          | TAGS
+// DELETE | /api/bar | deleteBar      | 204         |               | bar
+// PUT    | /api/bar | updateBar      | 200         | {"x":123}     | bar

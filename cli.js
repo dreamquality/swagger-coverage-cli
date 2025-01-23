@@ -84,23 +84,17 @@ program
         strictQuery,
         strictBody,
       });
-      // coverageItems is an array of objects:
-      // [
-      //   {
-      //     method: "GET",
-      //     path: "/v2/artist/elements",
-      //     name: "listElements",
-      //     tags: ["Artists", "Collections"],
-      //     expectedStatusCodes: ["200", "400"],
-      //     statusCode: "200",
-      //     unmatched: false,
-      //     matchedRequests: [
-      //       { name: "Get Elements (Postman)", rawUrl: "...", method: "GET", testedStatusCodes: ["200", "404"], scriptCode: "..." },
-      //       ...
-      //     ]
-      //   },
-      //   ...
-      // ]
+
+      // Collect matched request names
+      const matchedReqNames = new Set();
+      coverageItems.forEach(ci => {
+        ci.matchedRequests.forEach(mr => matchedReqNames.add(mr.name));
+      });
+
+      // Identify any Postman requests that weren't matched
+      const undocumentedRequests = postmanRequests.filter(
+        r => !matchedReqNames.has(r.name)
+      );
 
       // Calculate coverage: # of spec items that are NOT unmatched
       const totalSpecOps = coverageItems.length;
@@ -130,6 +124,7 @@ program
           timestamp: new Date().toLocaleString(),
           specName, // Use specName here
           postmanCollectionName: postmanData.info.name,
+          undocumentedRequests // Pass the unmatched requests here
         },
       });
 

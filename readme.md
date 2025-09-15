@@ -234,6 +234,111 @@ Unmatched operations:
 
 ---
 
+## Coverage Calculation Formulas
+
+**swagger-coverage-cli** uses precise mathematical formulas to calculate API test coverage. Understanding these formulas helps you interpret coverage reports and set appropriate coverage targets.
+
+### Basic Coverage Formula
+
+The core coverage calculation is based on the ratio of matched operations to total operations in your API specification:
+
+```
+Coverage (%) = (Matched Operations / Total Operations) × 100
+```
+
+Where:
+- **Total Operations** = Number of unique operation-status code combinations in your API specification
+- **Matched Operations** = Number of operations that have corresponding tests in your Postman collection or Newman report
+
+### Operation Matching Criteria
+
+An operation is considered **matched** when ALL of the following criteria are satisfied:
+
+1. **HTTP Method Match**: `specOperation.method === postmanRequest.method`
+2. **Path Pattern Match**: Postman URL matches the Swagger path pattern (with parameter substitution)
+3. **Status Code Verification**: At least one expected status code from the spec is tested
+4. **Query Parameters** (if `--strict-query` enabled): Required parameters are present and valid
+5. **Request Body** (if `--strict-body` enabled): JSON body structure matches specification
+
+### Coverage Types
+
+#### Standard Coverage
+```
+Standard Coverage = Matched Operations / Total Spec Operations × 100
+```
+
+#### Postman Collection Coverage
+When using Postman collections, coverage is calculated based on:
+- Static analysis of test scripts
+- Expected status codes extracted from `pm.response.to.have.status(code)` assertions
+- Request structure validation
+
+#### Newman Report Coverage (Recommended)
+When using Newman reports, coverage calculation includes:
+- **Actual execution data** from real test runs
+- **Response codes** from executed requests
+- **Assertion results** (passed/failed tests)
+
+```
+Newman Coverage = (Executed Operations with Passing Tests / Total Spec Operations) × 100
+```
+
+### Multi-API Coverage
+
+For multiple API specifications, coverage is calculated as:
+
+```
+Combined Coverage = (Sum of Matched Operations across all APIs / Sum of Total Operations across all APIs) × 100
+```
+
+Each API operation is identified by: `{API_Name}:{Method}:{Path}:{StatusCode}`
+
+### Tag-Based Coverage
+
+Coverage can also be calculated per tag/group:
+
+```
+Tag Coverage = (Matched Operations in Tag / Total Operations in Tag) × 100
+```
+
+### Examples
+
+#### Example 1: Single API
+- API Specification: 20 operations (GET /users/200, POST /users/201, GET /users/404, etc.)
+- Postman Tests: 15 operations covered
+- **Coverage**: 15/20 × 100 = **75%**
+
+#### Example 2: Newman vs Postman Collection
+- API Specification: 18 operations
+- Newman Report: 8 operations with actual execution data
+- Postman Collection: 2 operations with static test scripts
+- **Newman Coverage**: 8/18 × 100 = **44.44%**
+- **Postman Coverage**: 2/18 × 100 = **11.11%**
+
+#### Example 3: Multi-API Portfolio
+- User API: 10 operations (7 matched) = 70% coverage
+- Product API: 15 operations (12 matched) = 80% coverage
+- Order API: 8 operations (5 matched) = 62.5% coverage
+- **Combined Coverage**: (7+12+5)/(10+15+8) × 100 = 24/33 × 100 = **72.73%**
+
+### Coverage Quality Metrics
+
+Beyond basic percentage, consider these quality indicators:
+
+1. **Status Code Coverage**: Percentage of documented status codes that are tested
+2. **Method Distribution**: Coverage across different HTTP methods (GET, POST, PUT, DELETE)
+3. **Critical Path Coverage**: Coverage of business-critical API endpoints
+4. **Error Case Coverage**: Percentage of error scenarios (4xx, 5xx) that are tested
+
+### Recommendations
+
+- **Minimum Coverage**: Aim for 80%+ coverage for production APIs
+- **Critical Endpoints**: Ensure 100% coverage for authentication, payment, and data modification endpoints
+- **Error Testing**: Include at least 50% of documented error cases
+- **Use Newman Reports**: For more accurate coverage analysis in CI/CD pipelines
+
+---
+
 ## Detailed Matching Logic
 
 **swagger-coverage-cli** tries to match each **operation** from the spec with a **request** in Postman. An operation is considered **covered** if:

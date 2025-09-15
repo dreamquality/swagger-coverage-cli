@@ -142,3 +142,6 @@ index.html
 # Test output files
 *test-report.html
 *-report.html
+
+# Test artifacts and temporary files
+tmp/

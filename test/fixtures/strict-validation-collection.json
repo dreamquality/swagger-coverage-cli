@@ -1,0 +1,297 @@
+{
+  "info": {
+    "name": "Strict Validation Test Collection",
+    "description": "Test collection for strict query and body validation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Valid Requests",
+      "item": [
+        {
+          "name": "Get Users - Valid Required Params",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.example.com/users?status=active&limit=10&sort=name:asc",
+              "host": ["api", "example", "com"],
+              "path": ["users"],
+              "query": [
+                {"key": "status", "value": "active"},
+                {"key": "limit", "value": "10"},
+                {"key": "sort", "value": "name:asc"}
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create User - Valid JSON Body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"name\": \"John Doe\",\n  \"age\": 25\n}"
+            },
+            "url": {
+              "raw": "https://api.example.com/users",
+              "host": ["api", "example", "com"],
+              "path": ["users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Invalid Requests for Strict Validation",
+      "item": [
+        {
+          "name": "Get Users - Missing Required Param",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.example.com/users?limit=10",
+              "host": ["api", "example", "com"],
+              "path": ["users"],
+              "query": [
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Users - Invalid Enum Value",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.example.com/users?status=invalid&limit=10",
+              "host": ["api", "example", "com"],
+              "path": ["users"],
+              "query": [
+                {"key": "status", "value": "invalid"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Users - Invalid Pattern",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.example.com/users?status=active&limit=10&sort=invalid_pattern",
+              "host": ["api", "example", "com"],
+              "path": ["users"],
+              "query": [
+                {"key": "status", "value": "active"},
+                {"key": "limit", "value": "10"},
+                {"key": "sort", "value": "invalid_pattern"}
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create User - Invalid JSON Body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "invalid json content {"
+            },
+            "url": {
+              "raw": "https://api.example.com/users",
+              "host": ["api", "example", "com"],
+              "path": ["users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create User - Form Data Instead of JSON",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "email", "value": "test@example.com"},
+                {"key": "name", "value": "John Doe"}
+              ]
+            },
+            "url": {
+              "raw": "https://api.example.com/users",
+              "host": ["api", "example", "com"],
+              "path": ["users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Product - Optional Params",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Product\",\n  \"price\": 29.99\n}"
+            },
+            "url": {
+              "raw": "https://api.example.com/products/123?validate=true&reason=enhancement",
+              "host": ["api", "example", "com"],
+              "path": ["products", "123"],
+              "query": [
+                {"key": "validate", "value": "true"},
+                {"key": "reason", "value": "enhancement"}
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Order - Form Data (Non-JSON)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {"key": "product_id", "value": "123"},
+                {"key": "quantity", "value": "2"}
+              ]
+            },
+            "url": {
+              "raw": "https://api.example.com/orders",
+              "host": ["api", "example", "com"],
+              "path": ["orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

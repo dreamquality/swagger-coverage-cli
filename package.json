@@ -1,13 +1,14 @@
 {
   "name": "swagger-coverage-cli",
   "version": "4.0.0",
-  "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections.",
+  "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections or Newman run reports.",
   "main": "cli.js",
   "files": [
     "cli.js",
     "lib/",
     "readme.md",
-    "package.json"
+    "package.json",
+    "LICENSE"
   ],
   "bin": {
     "swagger-coverage-cli": "cli.js"
@@ -22,9 +23,12 @@
     "coverage",
     "cli",
     "postman",
+    "newman",
     "testing",
     "multi-api",
-    "microservices"
+    "microservices",
+    "api-testing",
+    "test-coverage"
   ],
   "author": "Alex <dreamquality337@gmail.com>",
   "license": "ISC",

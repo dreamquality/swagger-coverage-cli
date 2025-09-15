@@ -1,0 +1,155 @@
+openapi: 3.0.0
+info:
+  title: Strict Validation Test API
+  version: 1.0.0
+  description: API for testing strict query parameter and request body validation
+
+servers:
+  - url: https://api.example.com
+
+paths:
+  /users:
+    get:
+      operationId: getUsersWithRequiredParams
+      summary: Get users with required query parameters
+      parameters:
+        - name: status
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [active, inactive, pending]
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^[a-zA-Z_]+:(asc|desc)$'
+      responses:
+        '200':
+          description: Users retrieved successfully
+
+    post:
+      operationId: createUserWithJsonBody
+      summary: Create user with JSON body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                name:
+                  type: string
+                  minLength: 2
+                age:
+                  type: integer
+                  minimum: 18
+      responses:
+        '201':
+          description: User created successfully
+
+  /products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    
+    patch:
+      operationId: updateProductWithOptionalParams
+      summary: Update product with optional query parameters
+      parameters:
+        - name: validate
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: reason
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [correction, enhancement, migration]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                  minimum: 0
+      responses:
+        '200':
+          description: Product updated successfully
+
+  /orders:
+    post:
+      operationId: createOrderWithFormData
+      summary: Create order with form data (not JSON)
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                quantity:
+                  type: integer
+      responses:
+        '201':
+          description: Order created successfully
+
+  /search:
+    get:
+      operationId: searchWithComplexParams
+      summary: Search with complex parameter validation
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 3
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [electronics, books, clothing, home]
+        - name: price_min
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 0
+        - name: price_max
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 0
+      responses:
+        '200':
+          description: Search results

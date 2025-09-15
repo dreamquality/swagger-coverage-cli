@@ -1,0 +1,284 @@
+{
+  "collection": {
+    "info": {
+      "name": "Strict Validation Newman Report",
+      "description": "Newman execution report for strict validation testing"
+    }
+  },
+  "run": {
+    "executions": [
+      {
+        "id": "exec-1",
+        "item": {
+          "name": "Get Users - Valid Required Params",
+          "id": "item-1"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "https://api.example.com/users?status=active&limit=10&sort=name:asc",
+            "host": ["api", "example", "com"],
+            "path": ["users"],
+            "query": [
+              {"key": "status", "value": "active"},
+              {"key": "limit", "value": "10"},
+              {"key": "sort", "value": "name:asc"}
+            ]
+          },
+          "header": []
+        },
+        "response": {
+          "status": "OK",
+          "code": 200,
+          "responseTime": 150,
+          "responseSize": 1024
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-2",
+        "item": {
+          "name": "Create User - Valid JSON Body",
+          "id": "item-2"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "https://api.example.com/users",
+            "host": ["api", "example", "com"],
+            "path": ["users"]
+          },
+          "header": [
+            {"key": "Content-Type", "value": "application/json"}
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"test@example.com\",\n  \"name\": \"John Doe\",\n  \"age\": 25\n}"
+          }
+        },
+        "response": {
+          "status": "Created",
+          "code": 201,
+          "responseTime": 220,
+          "responseSize": 256
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 201",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-3",
+        "item": {
+          "name": "Get Users - Missing Required Param",
+          "id": "item-3"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "https://api.example.com/users?limit=10",
+            "host": ["api", "example", "com"],
+            "path": ["users"],
+            "query": [
+              {"key": "limit", "value": "10"}
+            ]
+          },
+          "header": []
+        },
+        "response": {
+          "status": "OK",
+          "code": 200,
+          "responseTime": 120,
+          "responseSize": 512
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-4",
+        "item": {
+          "name": "Get Users - Invalid Enum Value",
+          "id": "item-4"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "https://api.example.com/users?status=invalid&limit=10",
+            "host": ["api", "example", "com"],
+            "path": ["users"],
+            "query": [
+              {"key": "status", "value": "invalid"},
+              {"key": "limit", "value": "10"}
+            ]
+          },
+          "header": []
+        },
+        "response": {
+          "status": "OK",
+          "code": 200,
+          "responseTime": 110,
+          "responseSize": 256
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-5",
+        "item": {
+          "name": "Create User - Invalid JSON Body",
+          "id": "item-5"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "https://api.example.com/users",
+            "host": ["api", "example", "com"],
+            "path": ["users"]
+          },
+          "header": [
+            {"key": "Content-Type", "value": "application/json"}
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "invalid json content {"
+          }
+        },
+        "response": {
+          "status": "Created",
+          "code": 201,
+          "responseTime": 180,
+          "responseSize": 128
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 201",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-6",
+        "item": {
+          "name": "Create User - Form Data Instead of JSON",
+          "id": "item-6"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "https://api.example.com/users",
+            "host": ["api", "example", "com"],
+            "path": ["users"]
+          },
+          "header": [],
+          "body": {
+            "mode": "formdata",
+            "formdata": [
+              {"key": "email", "value": "test@example.com"},
+              {"key": "name", "value": "John Doe"}
+            ]
+          }
+        },
+        "response": {
+          "status": "Created",
+          "code": 201,
+          "responseTime": 160,
+          "responseSize": 200
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 201",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-7",
+        "item": {
+          "name": "Update Product - Optional Params",
+          "id": "item-7"
+        },
+        "request": {
+          "method": "PATCH",
+          "url": {
+            "raw": "https://api.example.com/products/123?validate=true&reason=enhancement",
+            "host": ["api", "example", "com"],
+            "path": ["products", "123"],
+            "query": [
+              {"key": "validate", "value": "true"},
+              {"key": "reason", "value": "enhancement"}
+            ]
+          },
+          "header": [
+            {"key": "Content-Type", "value": "application/json"}
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Updated Product\",\n  \"price\": 29.99\n}"
+          }
+        },
+        "response": {
+          "status": "OK",
+          "code": 200,
+          "responseTime": 140,
+          "responseSize": 300
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-8",
+        "item": {
+          "name": "Create Order - Form Data (Non-JSON)",
+          "id": "item-8"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "https://api.example.com/orders",
+            "host": ["api", "example", "com"],
+            "path": ["orders"]
+          },
+          "header": [],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {"key": "product_id", "value": "123"},
+              {"key": "quantity", "value": "2"}
+            ]
+          }
+        },
+        "response": {
+          "status": "Created",
+          "code": 201,
+          "responseTime": 130,
+          "responseSize": 180
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 201",
+            "error": null
+          }
+        ]
+      }
+    ]
+  }
+}

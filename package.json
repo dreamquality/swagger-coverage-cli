@@ -1,6 +1,6 @@
 {
   "name": "swagger-coverage-cli",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections or Newman run reports.",
   "main": "cli.js",
   "files": [

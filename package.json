@@ -1,13 +1,20 @@
 {
   "name": "swagger-coverage-cli",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections.",
   "main": "cli.js",
+  "files": [
+    "cli.js",
+    "lib/",
+    "readme.md",
+    "package.json"
+  ],
   "bin": {
     "swagger-coverage-cli": "cli.js"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
     "swagger",
@@ -15,7 +22,9 @@
     "coverage",
     "cli",
     "postman",
-    "testing"
+    "testing",
+    "multi-api",
+    "microservices"
   ],
   "author": "Alex <dreamquality337@gmail.com>",
   "license": "ISC",

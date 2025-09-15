@@ -1,0 +1,159 @@
+name: Release to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version type (patch, minor, major, or specific version)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - specific
+      specific_version:
+        description: 'Specific version (only if version_type is "specific")'
+        required: false
+        type: string
+      dry_run:
+        description: 'Dry run (publish with --dry-run flag)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: npm-release
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Update version (patch/minor/major)
+        if: ${{ inputs.version_type != 'specific' }}
+        run: |
+          npm version ${{ inputs.version_type }} --no-git-tag-version
+          echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Update version (specific)
+        if: ${{ inputs.version_type == 'specific' }}
+        run: |
+          npm version ${{ inputs.specific_version }} --no-git-tag-version
+          echo "NEW_VERSION=${{ inputs.specific_version }}" >> $GITHUB_ENV
+
+      - name: Commit version bump
+        run: |
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to v${{ env.NEW_VERSION }}"
+          git tag "v${{ env.NEW_VERSION }}"
+
+      - name: Push changes
+        run: |
+          git push origin ${{ github.ref_name }}
+          git push origin "v${{ env.NEW_VERSION }}"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.NEW_VERSION }}
+          release_name: Release v${{ env.NEW_VERSION }}
+          body: |
+            ## 🚀 swagger-coverage-cli v${{ env.NEW_VERSION }}
+            
+            ### ✨ Features
+            - **Multi-API Support**: Process multiple Swagger/OpenAPI specifications in a single run
+            - **Unified Reporting**: Generate combined coverage reports with individual API metrics
+            - **API Identification**: Tagged operations show source API name for better tracking
+            - **Enhanced HTML Reports**: New API column and multi-API headers for visual clarity
+            - **Format Support**: YAML, JSON, and CSV file formats supported
+            - **Microservices Ready**: Perfect for microservices architecture with multiple APIs
+            
+            ### 🔧 Compatibility
+            - ✅ Maintains backwards compatibility with single API mode
+            - ✅ Node.js 14+ required
+            - ✅ NPM package available globally
+            
+            ### 📦 Installation
+            ```bash
+            npm install -g swagger-coverage-cli@${{ env.NEW_VERSION }}
+            ```
+            
+            ### 🎯 Usage Examples
+            ```bash
+            # Single API (backwards compatible)
+            swagger-coverage-cli -s swagger.yaml -c collection.json
+            
+            # Multiple APIs
+            swagger-coverage-cli -s users-api.yaml,products-api.json,orders-api.csv -c collection.json
+            
+            # Generate detailed HTML report
+            swagger-coverage-cli -s api1.yaml,api2.yaml -c tests.json -o detailed-report.html
+            ```
+            
+            ### 📊 What's New in Multi-API Reports
+            - **API Source Column**: Each operation shows which API it belongs to
+            - **Combined Statistics**: Overall coverage across all APIs
+            - **Individual Breakdowns**: Per-API coverage metrics
+            - **Visual Enhancements**: Better headers and organization
+            
+            ---
+            
+            **Full Changelog**: https://github.com/dreamquality/swagger-coverage-cli/compare/v1.0.0...v${{ env.NEW_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Publish to NPM (dry run)
+        if: ${{ inputs.dry_run }}
+        run: npm publish --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to NPM
+        if: ${{ !inputs.dry_run }}
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Generate release summary
+        run: |
+          echo "## 🚀 Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Type:** ${{ inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Dry Run:** ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Package Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **NPM Package:** [swagger-coverage-cli](https://www.npmjs.com/package/swagger-coverage-cli)" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub Release:** [v${{ env.NEW_VERSION }}](https://github.com/${{ github.repository }}/releases/tag/v${{ env.NEW_VERSION }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎯 Key Features" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Multi-API support" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Unified coverage reports" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Enhanced HTML reports" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ YAML, JSON, CSV support" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Backwards compatibility" >> $GITHUB_STEP_SUMMARY

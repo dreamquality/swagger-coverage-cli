@@ -16,40 +16,61 @@ const program = new Command();
 program
   .name("swagger-coverage-cli")
   .description(
-    "CLI tool for comparing an OpenAPI/Swagger specification with a Postman collection, producing an enhanced HTML report"
+    "CLI tool for comparing OpenAPI/Swagger specifications with a Postman collection, producing an enhanced HTML report"
   )
   .version("1.0.1")
-  .argument("<swaggerFile>", "Path to the Swagger/OpenAPI file (JSON or YAML).")
+  .argument("<swaggerFiles>", "Path(s) to the Swagger/OpenAPI file(s) (JSON or YAML). Use comma-separated values for multiple files.")
   .argument("<postmanCollection>", "Path to the Postman collection (JSON).")
   .option("-v, --verbose", "Show verbose debug info")
   .option("--strict-query", "Enable strict validation of query parameters")
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
-  .action(async (swaggerFile, postmanFile, options) => {
+  .action(async (swaggerFiles, postmanFile, options) => {
     try {
       const { verbose, strictQuery, strictBody, output } = options;
 
-      const ext = path.extname(swaggerFile).toLowerCase();
+      // Parse comma-separated swagger files
+      const files = swaggerFiles.includes(',') ? 
+        swaggerFiles.split(',').map(f => f.trim()) : 
+        [swaggerFiles];
+      
+      let allSpecOperations = [];
+      let allSpecNames = [];
       const excelExtensions = [".xlsx", ".xls", ".csv"];
-      let specOperations;
-      let specName; // Add this variable
 
-      if (excelExtensions.includes(ext)) {
-        // Parse Excel
-        specOperations = loadExcelSpec(swaggerFile);
-        specName = path.basename(swaggerFile); // Set name for Excel files
-      } else {
-        // Original Swagger flow
-        const spec = await loadAndParseSpec(swaggerFile);
-        specName = spec.info.title; // Set name for Swagger files
-        if (verbose) {
-          console.log(
-            "Specification loaded successfully:",
-            specName,
-            spec.info.version
-          );
+      // Process each swagger file
+      for (const swaggerFile of files) {
+        const ext = path.extname(swaggerFile).toLowerCase();
+        let specOperations;
+        let specName;
+
+        if (excelExtensions.includes(ext)) {
+          // Parse Excel
+          specOperations = loadExcelSpec(swaggerFile);
+          specName = path.basename(swaggerFile);
+        } else {
+          // Original Swagger flow
+          const spec = await loadAndParseSpec(swaggerFile);
+          specName = spec.info.title;
+          if (verbose) {
+            console.log(
+              "Specification loaded successfully:",
+              specName,
+              spec.info.version
+            );
+          }
+          specOperations = extractOperationsFromSpec(spec, verbose);
         }
-        specOperations = extractOperationsFromSpec(spec, verbose);
+
+        // Add API name to each operation for identification
+        const operationsWithSource = specOperations.map(op => ({
+          ...op,
+          apiName: specName,
+          sourceFile: path.basename(swaggerFile)
+        }));
+
+        allSpecOperations = allSpecOperations.concat(operationsWithSource);
+        allSpecNames.push(specName);
       }
 
       // Ensure Postman file exists
@@ -79,7 +100,7 @@ program
       const postmanRequests = extractRequestsFromPostman(postmanData, verbose);
 
       // 5. Match operations in a "detailed" way that returns coverageItems
-      const coverageItems = matchOperationsDetailed(specOperations, postmanRequests, {
+      const coverageItems = matchOperationsDetailed(allSpecOperations, postmanRequests, {
         verbose,
         strictQuery,
         strictBody,
@@ -103,7 +124,10 @@ program
 
       // 6. Print console summary
       console.log("=== Swagger Coverage Report ===");
-      console.log(`Total operations in spec: ${totalSpecOps}`);
+      if (files.length > 1) {
+        console.log(`APIs analyzed: ${allSpecNames.join(', ')}`);
+      }
+      console.log(`Total operations in spec(s): ${totalSpecOps}`);
       console.log(`Matched operations in Postman: ${matchedCount}`);
       console.log(`Coverage: ${coverage.toFixed(2)}%`);
 
@@ -112,19 +136,26 @@ program
       if (unmatchedItems.length > 0) {
         console.log("\nUnmatched Spec operations:");
         unmatchedItems.forEach(item => {
-          console.log(` - [${item.method}] ${item.path} (statusCode=${item.statusCode || ""})`);
+          const prefix = files.length > 1 ? `[${item.apiName}] ` : '';
+          console.log(` - ${prefix}[${item.method}] ${item.path} (statusCode=${item.statusCode || ""})`);
         });
       }
 
-      // 7. Generate HTML report with specName instead of spec.info.title
+      // 7. Generate HTML report with combined spec name
+      const combinedSpecName = files.length > 1 ? 
+        `Multiple APIs (${allSpecNames.join(', ')})` : 
+        allSpecNames[0];
+        
       const html = generateHtmlReport({
         coverage,
         coverageItems,
         meta: {
           timestamp: new Date().toLocaleString(),
-          specName, // Use specName here
+          specName: combinedSpecName,
           postmanCollectionName: postmanData.info.name,
-          undocumentedRequests // Pass the unmatched requests here
+          undocumentedRequests,
+          apiCount: files.length,
+          apiNames: allSpecNames
         },
       });
 

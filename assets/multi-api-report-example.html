@@ -1,47 +1,4 @@
-// report.js
 
-"use strict";
-
-/**
- * generateHtmlReport - enhanced version adding:
- *   - Coverage by Tags/Groups (an extra bar/donut chart)
- *   - PDF export button
- *   - Detailed Status Code checks in the sub-table
- *   - History/Trend Over Time displayed as a line chart next to the coverage pie
- *   - Nested expandable tables for JS test scripts with syntax highlighting
- *
- * coverageItems: [
- *   {
- *     method: "GET",
- *     path: "/v2/artist/elements",
- *     name: "listElements",
- *     tags: ["Artists", "Collections"],
- *     expectedStatusCodes: ["200","400"],
- *     statusCode: "200",
- *     unmatched: false,
- *     matchedRequests: [
- *       {
- *         name: "Get Elements (Postman)",
- *         rawUrl: "https://api.example.com/v2/artist/elements?foo=bar",
- *         method: "GET",
- *         testedStatusCodes: ["200","404"],
- *         testScripts: "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
- *       },
- *       ...
- *     ]
- *   },
- *   ...
- * ]
- */
-function generateHtmlReport({ coverage, coverageItems, meta }) {
-  const { timestamp, specName, postmanCollectionName, apiCount = 1, apiNames = [] } = meta;
-  const covered = coverage;
-  const notCovered = 100 - coverage;
-
-  // Convert coverageItems to JSON for client side
-  const coverageDataJson = JSON.stringify(coverageItems);
-
-  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -407,13 +364,13 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
     &#128262; <!-- flashlight icon -->
   </button>
   <div class="meta-info">
-    <p><strong>Timestamp:</strong> ${timestamp}</p>
-    <p><strong>API Spec${apiCount > 1 ? 's' : ''}:</strong> ${specName}</p>
-    ${apiCount > 1 ? `<p><strong>Individual APIs:</strong> ${apiNames.join(', ')}</p>` : ''}
-    <p><strong>Postman Collection:</strong> ${postmanCollectionName}</p>
-    <p><strong>Coverage:</strong> ${coverage.toFixed(2)}%</p>
-    <p>Covered: ${covered.toFixed(2)}%<br/>
-    Not Covered: ${notCovered.toFixed(2)}%</p>
+    <p><strong>Timestamp:</strong> 9/15/2025, 11:46:12 AM</p>
+    <p><strong>API Specs:</strong> Multiple APIs (Users API, Products API, Orders API)</p>
+    <p><strong>Individual APIs:</strong> Users API, Products API, Orders API</p>
+    <p><strong>Postman Collection:</strong> Comprehensive Test Collection</p>
+    <p><strong>Coverage:</strong> 25.00%</p>
+    <p>Covered: 25.00%<br/>
+    Not Covered: 75.00%</p>
   </div>
 </header>
 
@@ -458,7 +415,7 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
   <table id="specTable">
     <thead>
       <tr>
-        ${apiCount > 1 ? '<th onclick="sortTableBy(\'apiName\')">API</th>' : ''}
+        <th onclick="sortTableBy('apiName')">API</th>
         <th onclick="sortTableBy('method')">Method</th>
         <th onclick="sortTableBy('path')">Path</th>
         <th onclick="sortTableBy('name')">Name</th>
@@ -484,8 +441,8 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
   hljs.highlightAll();
 
   // coverageData from server
-  let coverageData = ${coverageDataJson};
-  let apiCount = ${apiCount};
+  let coverageData = [{"method":"GET","path":"/users","name":"getUsers","statusCode":"200","tags":["Users"],"expectedStatusCodes":["200","400","500"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":false,"matchedRequests":[{"name":"Get All Users","rawUrl":"{{baseUrl}}/users?limit=10&offset=0","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Response is an array', function () {\n    pm.response.to.be.json;\n    pm.expect(pm.response.json()).to.be.an('array');\n});"}]},{"method":"GET","path":"/users","name":"getUsers","statusCode":"400","tags":["Users"],"expectedStatusCodes":["200","400","500"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/users","name":"getUsers","statusCode":"500","tags":["Users"],"expectedStatusCodes":["200","400","500"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"POST","path":"/users","name":"createUser","statusCode":"201","tags":["Users"],"expectedStatusCodes":["201","400","409"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":false,"matchedRequests":[{"name":"Create User","rawUrl":"{{baseUrl}}/users","method":"POST","testedStatusCodes":["201"],"testScripts":"pm.test('Status code is 201', function () {\n    pm.response.to.have.status(201);\n});\n\npm.test('User created successfully', function () {\n    const responseJson = pm.response.json();\n    pm.expect(responseJson).to.have.property('id');\n    pm.expect(responseJson.email).to.eql('john.doe@example.com');\n});"}]},{"method":"POST","path":"/users","name":"createUser","statusCode":"400","tags":["Users"],"expectedStatusCodes":["201","400","409"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"POST","path":"/users","name":"createUser","statusCode":"409","tags":["Users"],"expectedStatusCodes":["201","400","409"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"200","tags":["Users"],"expectedStatusCodes":["200","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":false,"matchedRequests":[{"name":"Get User by ID","rawUrl":"{{baseUrl}}/users/{{userId}}","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('User has required properties', function () {\n    const user = pm.response.json();\n    pm.expect(user).to.have.property('id');\n    pm.expect(user).to.have.property('email');\n    pm.expect(user).to.have.property('firstName');\n    pm.expect(user).to.have.property('lastName');\n});"}]},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"404","tags":["Users"],"expectedStatusCodes":["200","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/users/{id}","name":"updateUser","statusCode":"200","tags":["Users"],"expectedStatusCodes":["200","400","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":false,"matchedRequests":[{"name":"Update User","rawUrl":"{{baseUrl}}/users/{{userId}}","method":"PUT","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('User updated successfully', function () {\n    const user = pm.response.json();\n    pm.expect(user.firstName).to.eql('Johnny');\n});"}]},{"method":"PUT","path":"/users/{id}","name":"updateUser","statusCode":"400","tags":["Users"],"expectedStatusCodes":["200","400","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/users/{id}","name":"updateUser","statusCode":"404","tags":["Users"],"expectedStatusCodes":["200","400","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/users/{id}","name":"deleteUser","statusCode":"204","tags":["Users"],"expectedStatusCodes":["204","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/users/{id}","name":"deleteUser","statusCode":"404","tags":["Users"],"expectedStatusCodes":["204","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/users/{id}/profile","name":"getUserProfile","statusCode":"200","tags":["Users","Profile"],"expectedStatusCodes":["200","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/users/{id}/profile","name":"getUserProfile","statusCode":"404","tags":["Users","Profile"],"expectedStatusCodes":["200","404"],"apiName":"Users API","sourceFile":"users-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/products","name":"getProducts","statusCode":"200","tags":["Products"],"expectedStatusCodes":["200","400"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":false,"matchedRequests":[{"name":"Get All Products","rawUrl":"{{baseUrl}}/products?category=electronics&limit=20","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Response has products array', function () {\n    const response = pm.response.json();\n    pm.expect(response).to.have.property('products');\n    pm.expect(response.products).to.be.an('array');\n});"}]},{"method":"GET","path":"/products","name":"getProducts","statusCode":"400","tags":["Products"],"expectedStatusCodes":["200","400"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"POST","path":"/products","name":"createProduct","statusCode":"201","tags":["Products"],"expectedStatusCodes":["201","400","403"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":false,"matchedRequests":[{"name":"Create Product","rawUrl":"{{baseUrl}}/products","method":"POST","testedStatusCodes":["201"],"testScripts":"pm.test('Status code is 201', function () {\n    pm.response.to.have.status(201);\n});\n\npm.test('Product created successfully', function () {\n    const product = pm.response.json();\n    pm.expect(product).to.have.property('id');\n    pm.expect(product.name).to.eql('Smartphone X');\n});"}]},{"method":"POST","path":"/products","name":"createProduct","statusCode":"400","tags":["Products"],"expectedStatusCodes":["201","400","403"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"POST","path":"/products","name":"createProduct","statusCode":"403","tags":["Products"],"expectedStatusCodes":["201","400","403"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/products/{id}","name":"getProductById","statusCode":"200","tags":["Products"],"expectedStatusCodes":["200","404"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":false,"matchedRequests":[{"name":"Get Product by ID","rawUrl":"{{baseUrl}}/products/{{productId}}","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Product has required properties', function () {\n    const product = pm.response.json();\n    pm.expect(product).to.have.property('id');\n    pm.expect(product).to.have.property('name');\n    pm.expect(product).to.have.property('price');\n});"}]},{"method":"GET","path":"/products/{id}","name":"getProductById","statusCode":"404","tags":["Products"],"expectedStatusCodes":["200","404"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/products/{id}","name":"updateProduct","statusCode":"200","tags":["Products"],"expectedStatusCodes":["200","400","404"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/products/{id}","name":"updateProduct","statusCode":"400","tags":["Products"],"expectedStatusCodes":["200","400","404"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/products/{id}","name":"updateProduct","statusCode":"404","tags":["Products"],"expectedStatusCodes":["200","400","404"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/products/{id}","name":"deleteProduct","statusCode":"204","tags":["Products"],"expectedStatusCodes":["204","404","409"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/products/{id}","name":"deleteProduct","statusCode":"404","tags":["Products"],"expectedStatusCodes":["204","404","409"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/products/{id}","name":"deleteProduct","statusCode":"409","tags":["Products"],"expectedStatusCodes":["204","404","409"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/products/{id}/reviews","name":"getProductReviews","statusCode":"200","tags":["Products","Reviews"],"expectedStatusCodes":["200","404"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/products/{id}/reviews","name":"getProductReviews","statusCode":"404","tags":["Products","Reviews"],"expectedStatusCodes":["200","404"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/categories","name":"getCategories","statusCode":"200","tags":["Categories"],"expectedStatusCodes":["200"],"apiName":"Products API","sourceFile":"products-api.yaml","unmatched":false,"matchedRequests":[{"name":"Get Categories","rawUrl":"{{baseUrl}}/categories","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Categories returned as array', function () {\n    pm.response.to.be.json;\n    pm.expect(pm.response.json()).to.be.an('array');\n});"}]},{"method":"GET","path":"/orders","name":"getOrders","statusCode":"200","tags":["Orders"],"expectedStatusCodes":["200","400"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":false,"matchedRequests":[{"name":"Get All Orders","rawUrl":"{{baseUrl}}/orders?status=pending&userId={{userId}}","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Orders returned as array', function () {\n    pm.response.to.be.json;\n    pm.expect(pm.response.json()).to.be.an('array');\n});"}]},{"method":"GET","path":"/orders","name":"getOrders","statusCode":"400","tags":["Orders"],"expectedStatusCodes":["200","400"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"POST","path":"/orders","name":"createOrder","statusCode":"201","tags":["Orders"],"expectedStatusCodes":["201","400","409"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":false,"matchedRequests":[{"name":"Create Order","rawUrl":"{{baseUrl}}/orders","method":"POST","testedStatusCodes":["201"],"testScripts":"pm.test('Status code is 201', function () {\n    pm.response.to.have.status(201);\n});\n\npm.test('Order created successfully', function () {\n    const order = pm.response.json();\n    pm.expect(order).to.have.property('id');\n    pm.expect(order).to.have.property('status');\n    pm.expect(order.status).to.eql('pending');\n    pm.globals.set('orderId', order.id);\n});"}]},{"method":"POST","path":"/orders","name":"createOrder","statusCode":"400","tags":["Orders"],"expectedStatusCodes":["201","400","409"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"POST","path":"/orders","name":"createOrder","statusCode":"409","tags":["Orders"],"expectedStatusCodes":["201","400","409"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/orders/{id}","name":"getOrderById","statusCode":"200","tags":["Orders"],"expectedStatusCodes":["200","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":false,"matchedRequests":[{"name":"Get Order by ID","rawUrl":"{{baseUrl}}/orders/{{orderId}}","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Order has required properties', function () {\n    const order = pm.response.json();\n    pm.expect(order).to.have.property('id');\n    pm.expect(order).to.have.property('userId');\n    pm.expect(order).to.have.property('status');\n    pm.expect(order).to.have.property('items');\n});"}]},{"method":"GET","path":"/orders/{id}","name":"getOrderById","statusCode":"404","tags":["Orders"],"expectedStatusCodes":["200","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/orders/{id}","name":"updateOrderStatus","statusCode":"200","tags":["Orders"],"expectedStatusCodes":["200","400","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/orders/{id}","name":"updateOrderStatus","statusCode":"400","tags":["Orders"],"expectedStatusCodes":["200","400","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"PUT","path":"/orders/{id}","name":"updateOrderStatus","statusCode":"404","tags":["Orders"],"expectedStatusCodes":["200","400","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/orders/{id}","name":"cancelOrder","statusCode":"204","tags":["Orders"],"expectedStatusCodes":["204","404","409"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/orders/{id}","name":"cancelOrder","statusCode":"404","tags":["Orders"],"expectedStatusCodes":["204","404","409"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"DELETE","path":"/orders/{id}","name":"cancelOrder","statusCode":"409","tags":["Orders"],"expectedStatusCodes":["204","404","409"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/orders/{id}/items","name":"getOrderItems","statusCode":"200","tags":["Orders"],"expectedStatusCodes":["200","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":false,"matchedRequests":[{"name":"Get Order Items","rawUrl":"{{baseUrl}}/orders/{{orderId}}/items","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Items returned as array', function () {\n    pm.response.to.be.json;\n    pm.expect(pm.response.json()).to.be.an('array');\n});"}]},{"method":"GET","path":"/orders/{id}/items","name":"getOrderItems","statusCode":"404","tags":["Orders"],"expectedStatusCodes":["200","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/orders/{id}/tracking","name":"getOrderTracking","statusCode":"200","tags":["Orders","Tracking"],"expectedStatusCodes":["200","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/orders/{id}/tracking","name":"getOrderTracking","statusCode":"404","tags":["Orders","Tracking"],"expectedStatusCodes":["200","404"],"apiName":"Orders API","sourceFile":"orders-api.json","unmatched":true,"matchedRequests":[]}];
+  let apiCount = 3;
 
   // Merge duplicates for display only
   function unifyByMethodAndPath(items) {
@@ -527,9 +484,9 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
   window.onload = function() {
     coverageData = unifyByMethodAndPath(coverageData);
     // Save coverage in localStorage to build a trend
-    updateCoverageHistory(${coverage.toFixed(2)});
+    updateCoverageHistory(25.00);
 
-    renderCoverageChart(${coverage.toFixed(2)});
+    renderCoverageChart(25.00);
     renderTrendChart();
     renderTagChart();
     renderTable();
@@ -956,12 +913,12 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
     const testScripts = pmReq.testScripts || '';
     const method = (pmReq.method || '').toUpperCase();
     
-    const hasResponseTimeTest = /pm\.response\.responseTime|pm\.expect\([^)]*responseTime[^)]*\)|pm\.response\.time/i.test(testScripts);
+    const hasResponseTimeTest = /pm.response.responseTime|pm.expect([^)]*responseTime[^)]*)|pm.response.time/i.test(testScripts);
     if (!hasResponseTimeTest) {
       recommendations.push('Missing response time validation');
     }
 
-    const hasSchemaValidation = /pm\.response\.json\(\).*schema|tv4\.validate|ajv\.validate|expect\(.*\)\.to\.match\.schema/i.test(testScripts);
+    const hasSchemaValidation = /pm.response.json().*schema|tv4.validate|ajv.validate|expect(.*).to.match.schema/i.test(testScripts);
     if (!hasSchemaValidation && !(method === 'DELETE' && pmReq.testedStatusCodes.includes('204'))) {
       recommendations.push('Missing JSON schema validation');
     }
@@ -999,16 +956,9 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
                           (filterMode === 'unmatched' && row.classList.contains('unmatched-spec'));
       
       row.style.display = matchesSearch && matchesFilter ? '' : 'none';
-            // Hide corresponding matched-requests-row if parent is hidden      const rowId = row.getAttribute('onclick')?.match(/toggleMatchedRow\('(.+?)'\)/)?.[1];      if (rowId) {        const matchedRow = document.getElementById(rowId);        if (matchedRow) {          matchedRow.style.display = 'none';        }      }
+            // Hide corresponding matched-requests-row if parent is hidden      const rowId = row.getAttribute('onclick')?.match(/toggleMatchedRow('(.+?)')/)?.[1];      if (rowId) {        const matchedRow = document.getElementById(rowId);        if (matchedRow) {          matchedRow.style.display = 'none';        }      }
     });
   }
 </script>
 </body>
 </html>
-`;
-
-  return html;
-}
-
-// Export the function
-module.exports = { generateHtmlReport };

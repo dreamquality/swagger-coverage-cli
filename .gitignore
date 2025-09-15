@@ -138,3 +138,7 @@ dist
 postman_collection.json
 openapi.yaml
 index.html
+
+# Test output files
+*test-report.html
+*-report.html

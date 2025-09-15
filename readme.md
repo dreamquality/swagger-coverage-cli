@@ -30,18 +30,20 @@ Check out the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
 
 ## Introduction
 
-**swagger-coverage-cli** is a tool that helps you **measure how much of your OpenAPI/Swagger-documented API is actually covered by your Postman tests**. It reads two main inputs:
+**swagger-coverage-cli** is a tool that helps you **measure how much of your OpenAPI/Swagger-documented API is actually covered by your Postman tests**. It reads inputs from:
 
-1. An **OpenAPI/Swagger** specification (version 2 or 3) in either JSON or YAML format, or a **CSV** file containing API documentation.
+1. **Single or Multiple OpenAPI/Swagger** specifications (version 2 or 3) in either JSON or YAML format, or **CSV** files containing API documentation.
 2. A **Postman** collection (JSON) that contains requests and test scripts.
 
-Using this information, the CLI **calculates a coverage percentage** and produces a **detailed HTML report** indicating which endpoints and status codes are validated, and which are missing tests.
+The tool supports processing **multiple API specifications in a single run**, making it ideal for organizations managing multiple APIs or microservices. Using this information, the CLI **calculates a unified coverage percentage** and produces a **detailed HTML report** indicating which endpoints and status codes are validated across all APIs, and which are missing tests.
 
 ---
 
 ## Features
 
 - **Easy to Use**: Simple CLI interface with just two main arguments (the Swagger file and the Postman collection).
+- **Multiple API Support**: Process multiple Swagger/OpenAPI specifications in a single run for comprehensive API portfolio management.
+- **Unified Reporting**: Generate consolidated reports that show coverage across all APIs while maintaining individual API identification.
 - **Strict Matching (Optional)**: Enforce strict checks for query parameters, request bodies, and more.
 - **HTML Reports**: Generates `coverage-report.html` that shows which endpoints are covered and which are not.
 - **Extensible**: Modular code structure (Node.js) allows customization of matching logic, query parameter checks, status code detection, etc.
@@ -67,6 +69,50 @@ flowchart LR
 3. *Match Operations: The tool compares each documented operation with each Postman request to see if it’s covered (based on path patterns, method, status codes tested, and optional strict checks on parameters and body).
 4. Calculate Coverage: It counts how many documented API operations are matched with Postman tests vs. how many total operations are defined in your spec or CSV.
 5. Generate Report: Prints a summary to the console and creates an HTML file (by default coverage-report.html) with matched and unmatched endpoints.
+
+---
+
+## Multi-API Support
+
+**swagger-coverage-cli** now supports processing multiple Swagger/OpenAPI specifications in a single run, making it perfect for organizations managing multiple APIs or microservices.
+
+### Usage
+
+To analyze multiple APIs, provide comma-separated file paths:
+
+```bash
+swagger-coverage-cli "api1.yaml,api2.yaml,api3.json" collection.json
+```
+
+### Features
+
+- **Unified Coverage Report**: Get a single report showing coverage across all APIs
+- **API Identification**: Each operation in the report is tagged with its source API
+- **Individual API Breakdown**: The report header shows both the combined API list and individual API names
+- **Separate Operation Tracking**: Operations with the same path/method from different APIs are tracked separately
+- **Backwards Compatibility**: Single API mode works exactly as before
+
+### Example Output
+
+When processing multiple APIs, the console output will show:
+
+```
+=== Swagger Coverage Report ===
+APIs analyzed: User API, Product API, Order API
+Total operations in spec(s): 24
+Matched operations in Postman: 18
+Coverage: 75.00%
+
+Unmatched Spec operations:
+ - [User API] [GET] /users/{id}/profile (statusCode=404)
+ - [Product API] [POST] /products (statusCode=400)
+ - [Order API] [DELETE] /orders/{id} (statusCode=204)
+```
+
+The HTML report will include:
+- **API column** in the operations table to identify the source API
+- **Combined API information** in the report header
+- **Individual API breakdown** for detailed analysis
 
 ---
 
@@ -109,7 +155,12 @@ Use the following command:
 ```bash
 npm swagger-coverage-cli <swaggerFile> <postmanCollection> [options]
 
+```
 
+**For Multiple APIs:**
+
+```bash
+npm swagger-coverage-cli "api1.yaml,api2.yaml,api3.json" collection.json [options]
 
 ```
 
@@ -118,7 +169,12 @@ Example:
 ```bash
 npm swagger-coverage-cli openapi.yaml collection.json --verbose --strict-query --strict-body
 
+```
 
+**Multiple APIs Example:**
+
+```bash
+npm swagger-coverage-cli "users-api.yaml,products-api.yaml" collection.json --verbose --output multi-api-report.html
 
 ```
 

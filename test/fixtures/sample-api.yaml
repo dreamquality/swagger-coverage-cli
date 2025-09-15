@@ -1,0 +1,403 @@
+openapi: 3.0.0
+info:
+  title: Sample API for Newman Demo
+  version: 1.0.0
+  description: |
+    A comprehensive API specification for demonstrating Newman report coverage analysis.
+    This API includes various endpoints with different HTTP methods and status codes.
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.example.com
+    description: Production server
+  - url: https://staging-api.example.com
+    description: Staging server
+
+paths:
+  /users:
+    get:
+      operationId: getUsers
+      summary: Retrieve all users
+      description: Returns a paginated list of all users in the system
+      tags:
+        - Users
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of users per page
+      responses:
+        '200':
+          description: Successfully retrieved users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: createUser
+      summary: Create a new user
+      description: Creates a new user account with the provided information
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid user data or validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '409':
+          description: User with email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+        description: Unique identifier for the user
+
+    get:
+      operationId: getUserById
+      summary: Get user by ID
+      description: Retrieves a specific user by their unique identifier
+      tags:
+        - Users
+      responses:
+        '200':
+          description: User found and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Invalid user ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      operationId: updateUser
+      summary: Update user (partial)
+      description: Updates specific fields of a user account
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid update data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      operationId: deleteUser
+      summary: Delete user
+      description: Permanently removes a user account from the system
+      tags:
+        - Users
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Insufficient permissions to delete user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /admin/users:
+    get:
+      operationId: getAdminUsers
+      summary: Admin - Get all users
+      description: Administrative endpoint to retrieve all users with enhanced details
+      tags:
+        - Admin
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved admin user list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdminUser'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Insufficient admin privileges
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+      properties:
+        id:
+          type: integer
+          description: Unique user identifier
+          example: 123
+        name:
+          type: string
+          description: Full name of the user
+          example: "Alice Smith"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "alice@example.com"
+        role:
+          type: string
+          enum: [user, admin, moderator]
+          description: User's role in the system
+          example: "user"
+        createdAt:
+          type: string
+          format: date-time
+          description: When the user account was created
+          example: "2023-01-15T10:30:00Z"
+        lastLoginAt:
+          type: string
+          format: date-time
+          description: When the user last logged in
+          example: "2023-01-20T14:45:00Z"
+
+    AdminUser:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            loginCount:
+              type: integer
+              description: Total number of logins
+              example: 42
+            ipAddress:
+              type: string
+              description: Last known IP address
+              example: "192.168.1.100"
+            isActive:
+              type: boolean
+              description: Whether the account is active
+              example: true
+
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Full name of the user
+          example: "Alice Smith"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "alice@example.com"
+        role:
+          type: string
+          enum: [user, moderator]
+          description: Initial role for the user
+          default: "user"
+          example: "user"
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Updated full name
+        email:
+          type: string
+          format: email
+          description: Updated email address
+        role:
+          type: string
+          enum: [user, admin, moderator]
+          description: Updated role
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        limit:
+          type: integer
+          description: Items per page
+          example: 20
+        total:
+          type: integer
+          description: Total number of items
+          example: 150
+        hasNext:
+          type: boolean
+          description: Whether there are more pages
+          example: true
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type
+          example: "NOT_FOUND"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "User not found"
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred
+          example: "2023-01-20T15:30:00Z"
+
+    ValidationError:
+      type: object
+      required:
+        - error
+        - message
+        - validationErrors
+      properties:
+        error:
+          type: string
+          description: Error type
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: General validation error message
+          example: "Request validation failed"
+        validationErrors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Field that failed validation
+                example: "email"
+              message:
+                type: string
+                description: Specific validation error
+                example: "Invalid email format"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token-based authentication

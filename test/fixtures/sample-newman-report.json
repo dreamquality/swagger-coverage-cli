@@ -1,0 +1,443 @@
+{
+  "collection": {
+    "info": {
+      "postman_id": "abc123-def456-ghi789",
+      "name": "Comprehensive API Test Collection",
+      "description": "Sample Newman collection demonstrating various test scenarios",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    }
+  },
+  "environment": {
+    "name": "Test Environment",
+    "values": [
+      {
+        "key": "baseUrl",
+        "value": "https://api.example.com"
+      }
+    ]
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 8,
+        "pending": 0,
+        "failed": 2
+      },
+      "scripts": {
+        "total": 16,
+        "pending": 0,
+        "failed": 3
+      },
+      "prerequest": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 8,
+        "pending": 0,
+        "failed": 1
+      },
+      "tests": {
+        "total": 16,
+        "pending": 0,
+        "failed": 3
+      },
+      "assertions": {
+        "total": 16,
+        "pending": 0,
+        "failed": 3
+      },
+      "testScripts": {
+        "total": 8,
+        "pending": 0,
+        "failed": 2
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 125,
+      "responseMin": 23,
+      "responseMax": 456,
+      "responseSd": 89,
+      "dnsAverage": 5,
+      "dnsMin": 2,
+      "dnsMax": 12,
+      "dnsSd": 3,
+      "firstByteAverage": 78,
+      "firstByteMin": 15,
+      "firstByteMax": 234,
+      "firstByteSd": 45
+    },
+    "executions": [
+      {
+        "item": {
+          "name": "Get Users - Successful",
+          "id": "exec-001"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "{{baseUrl}}/users",
+            "host": ["{{baseUrl}}"],
+            "path": ["users"]
+          },
+          "header": [
+            {
+              "key": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "response": {
+          "code": 200,
+          "status": "OK",
+          "responseTime": 125,
+          "responseSize": 1245,
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "error": null
+          },
+          {
+            "assertion": "Response time is less than 500ms",
+            "error": null
+          },
+          {
+            "assertion": "Response has users array",
+            "error": null
+          }
+        ]
+      },
+      {
+        "item": {
+          "name": "Create User - Success",
+          "id": "exec-002"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "{{baseUrl}}/users",
+            "host": ["{{baseUrl}}"],
+            "path": ["users"]
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"Alice Smith\", \"email\": \"alice@example.com\", \"role\": \"user\"}"
+          }
+        },
+        "response": {
+          "code": 201,
+          "status": "Created",
+          "responseTime": 89,
+          "responseSize": 234,
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Location",
+              "value": "/users/123"
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 201",
+            "error": null
+          },
+          {
+            "assertion": "Response has user ID",
+            "error": null
+          }
+        ]
+      },
+      {
+        "item": {
+          "name": "Create User - Validation Error",
+          "id": "exec-003"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "{{baseUrl}}/users",
+            "host": ["{{baseUrl}}"],
+            "path": ["users"]
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"\", \"email\": \"invalid-email\"}"
+          }
+        },
+        "response": {
+          "code": 400,
+          "status": "Bad Request",
+          "responseTime": 45,
+          "responseSize": 156,
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 400",
+            "error": null
+          },
+          {
+            "assertion": "Response contains validation errors",
+            "error": null
+          }
+        ]
+      },
+      {
+        "item": {
+          "name": "Get User by ID - Found",
+          "id": "exec-004"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "{{baseUrl}}/users/123",
+            "host": ["{{baseUrl}}"],
+            "path": ["users", "123"]
+          },
+          "header": [
+            {
+              "key": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "response": {
+          "code": 200,
+          "status": "OK",
+          "responseTime": 67,
+          "responseSize": 345,
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "error": null
+          },
+          {
+            "assertion": "Response contains user data",
+            "error": null
+          }
+        ]
+      },
+      {
+        "item": {
+          "name": "Get User by ID - Not Found",
+          "id": "exec-005"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "{{baseUrl}}/users/999",
+            "host": ["{{baseUrl}}"],
+            "path": ["users", "999"]
+          },
+          "header": [
+            {
+              "key": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "response": {
+          "code": 404,
+          "status": "Not Found",
+          "responseTime": 34,
+          "responseSize": 87,
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 404",
+            "error": null
+          },
+          {
+            "assertion": "Response contains error message",
+            "error": null
+          }
+        ]
+      },
+      {
+        "item": {
+          "name": "Update User - Partial Update",
+          "id": "exec-006"
+        },
+        "request": {
+          "method": "PATCH",
+          "url": {
+            "raw": "{{baseUrl}}/users/123",
+            "host": ["{{baseUrl}}"],
+            "path": ["users", "123"]
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"Alice Johnson\"}"
+          }
+        },
+        "response": {
+          "code": 200,
+          "status": "OK",
+          "responseTime": 112,
+          "responseSize": 298,
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "error": null
+          },
+          {
+            "assertion": "Response contains updated user",
+            "error": null
+          }
+        ]
+      },
+      {
+        "item": {
+          "name": "Delete User - Success",
+          "id": "exec-007"
+        },
+        "request": {
+          "method": "DELETE",
+          "url": {
+            "raw": "{{baseUrl}}/users/123",
+            "host": ["{{baseUrl}}"],
+            "path": ["users", "123"]
+          }
+        },
+        "response": {
+          "code": 204,
+          "status": "No Content",
+          "responseTime": 56,
+          "responseSize": 0,
+          "headers": []
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 204",
+            "error": null
+          }
+        ]
+      },
+      {
+        "item": {
+          "name": "Authentication Test - Unauthorized",
+          "id": "exec-008"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "{{baseUrl}}/admin/users",
+            "host": ["{{baseUrl}}"],
+            "path": ["admin", "users"]
+          },
+          "header": [
+            {
+              "key": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "response": {
+          "code": 401,
+          "status": "Unauthorized",
+          "responseTime": 23,
+          "responseSize": 67,
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 401",
+            "error": null
+          },
+          {
+            "assertion": "Response time is acceptable",
+            "error": {
+              "name": "AssertionError",
+              "message": "Expected response time to be less than 20ms but got 23ms"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "failures": [
+    {
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected response time to be less than 20ms but got 23ms",
+        "test": "Response time is acceptable"
+      },
+      "at": "exec-008",
+      "source": {
+        "name": "Authentication Test - Unauthorized"
+      }
+    }
+  ],
+  "transferredBytes": 2861,
+  "responseBytes": 2415
+}

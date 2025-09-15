@@ -18,7 +18,7 @@ program
   .description(
     "CLI tool for comparing OpenAPI/Swagger specifications with a Postman collection, producing an enhanced HTML report"
   )
-  .version("1.0.1")
+  .version("4.0.0")
   .argument("<swaggerFiles>", "Path(s) to the Swagger/OpenAPI file(s) (JSON or YAML). Use comma-separated values for multiple files.")
   .argument("<postmanCollection>", "Path to the Postman collection (JSON).")
   .option("-v, --verbose", "Show verbose debug info")

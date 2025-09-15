@@ -1,0 +1,11 @@
+METHOD,URI,NAME,TAGS,STATUS CODE
+GET,/analytics/reports,Get analytics reports,Analytics,200
+GET,/analytics/reports/{id},Get specific analytics report,Analytics,200
+POST,/analytics/reports,Create analytics report,Analytics,201
+PUT,/analytics/reports/{id},Update analytics report,Analytics,200
+DELETE,/analytics/reports/{id},Delete analytics report,Analytics,204
+GET,/analytics/dashboard,Get dashboard data,"Analytics,Dashboard",200
+GET,/analytics/metrics,Get metrics summary,"Analytics,Metrics",200
+GET,/analytics/metrics/{metric},Get specific metric,"Analytics,Metrics",200
+POST,/analytics/events,Track analytics event,"Analytics,Events",201
+GET,/analytics/events,Get analytics events,"Analytics,Events",200

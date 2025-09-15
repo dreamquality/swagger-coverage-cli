@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Simple Test API
+  version: 1.0.0
+  description: Simple API for testing purposes
+paths:
+  /test:
+    get:
+      operationId: getTest
+      summary: Test GET endpoint
+      tags:
+        - Test
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Server error
+    post:
+      operationId: createTest
+      summary: Test POST endpoint
+      tags:
+        - Test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: string
+              required:
+                - name
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  value:
+                    type: string
+        '400':
+          description: Bad request
+  /test/{id}:
+    get:
+      operationId: getTestById
+      summary: Get test by ID
+      tags:
+        - Test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Test item found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  value:
+                    type: string
+        '404':
+          description: Test item not found

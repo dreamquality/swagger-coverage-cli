@@ -152,7 +152,8 @@ jobs:
           echo "- **GitHub Release:** [v${{ env.NEW_VERSION }}](https://github.com/${{ github.repository }}/releases/tag/v${{ env.NEW_VERSION }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🎯 Key Features" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Multi-API support" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Extended test coverage" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Newman support" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Unified coverage reports" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Enhanced HTML reports" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ YAML, JSON, CSV support" >> $GITHUB_STEP_SUMMARY

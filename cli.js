@@ -7,6 +7,7 @@ const { Command } = require("commander");
 
 const { loadAndParseSpec, extractOperationsFromSpec } = require("./lib/swagger");
 const { loadPostmanCollection, extractRequestsFromPostman } = require("./lib/postman");
+const { loadNewmanReport, extractRequestsFromNewman } = require("./lib/newman");
 const { matchOperationsDetailed } = require("./lib/match");
 const { generateHtmlReport } = require("./lib/report");
 const { loadExcelSpec } = require("./lib/excel");
@@ -16,18 +17,19 @@ const program = new Command();
 program
   .name("swagger-coverage-cli")
   .description(
-    "CLI tool for comparing OpenAPI/Swagger specifications with a Postman collection, producing an enhanced HTML report"
+    "CLI tool for comparing OpenAPI/Swagger specifications with a Postman collection or Newman run report, producing an enhanced HTML report"
   )
   .version("4.0.0")
   .argument("<swaggerFiles>", "Path(s) to the Swagger/OpenAPI file(s) (JSON or YAML). Use comma-separated values for multiple files.")
-  .argument("<postmanCollection>", "Path to the Postman collection (JSON).")
+  .argument("<postmanCollectionOrNewmanReport>", "Path to the Postman collection (JSON) or Newman run report (JSON).")
   .option("-v, --verbose", "Show verbose debug info")
   .option("--strict-query", "Enable strict validation of query parameters")
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
+  .option("--newman", "Treat input file as Newman run report instead of Postman collection")
   .action(async (swaggerFiles, postmanFile, options) => {
     try {
-      const { verbose, strictQuery, strictBody, output } = options;
+      const { verbose, strictQuery, strictBody, output, newman } = options;
 
       // Parse comma-separated swagger files
       const files = swaggerFiles.includes(',') ? 
@@ -73,31 +75,55 @@ program
         allSpecNames.push(specName);
       }
 
-      // Ensure Postman file exists
+      // Ensure Postman/Newman file exists
       if (!fs.existsSync(postmanFile)) {
-        throw new Error(`Postman file not found: ${postmanFile}`);
+        throw new Error(`Input file not found: ${postmanFile}`);
       }
 
-      // Safely parse Postman JSON
-      let postmanData;
+      // Safely parse input JSON (Postman collection or Newman report)
+      let inputData;
+      let collectionName;
       try {
-        const rawPostman = fs.readFileSync(postmanFile, "utf8");
-        if (!rawPostman.trim()) {
-          throw new Error("Postman file is empty.");
+        const rawInput = fs.readFileSync(postmanFile, "utf8");
+        if (!rawInput.trim()) {
+          throw new Error("Input file is empty.");
         }
-        postmanData = JSON.parse(rawPostman);
+        inputData = JSON.parse(rawInput);
       } catch (err) {
-        throw new Error(`Unable to parse Postman JSON: ${err.message}`);
+        throw new Error(`Unable to parse input JSON: ${err.message}`);
       }
 
-      if (verbose) {
-        console.log(
-          `Postman collection loaded successfully: "${postmanData.info.name}"`
-        );
+      let postmanRequests;
+      
+      if (newman) {
+        // Handle Newman report
+        if (!inputData.run || !inputData.run.executions) {
+          throw new Error('Invalid Newman report format: missing run or executions fields.');
+        }
+        collectionName = inputData.collection?.info?.name || 'Newman Report';
+        if (verbose) {
+          console.log(`Newman report loaded successfully: "${collectionName}"`);
+        }
+        postmanRequests = extractRequestsFromNewman(inputData, verbose);
+      } else {
+        // Auto-detect format or handle as Postman collection
+        if (inputData.run && inputData.run.executions) {
+          // This looks like a Newman report but --newman flag wasn't used
+          console.log("Detected Newman report format. Consider using --newman flag for explicit handling.");
+          collectionName = inputData.collection?.info?.name || 'Auto-detected Newman Report';
+          postmanRequests = extractRequestsFromNewman(inputData, verbose);
+        } else {
+          // Handle as Postman collection
+          if (!inputData.info || !inputData.item) {
+            throw new Error('Invalid Postman collection format: missing info or item fields.');
+          }
+          collectionName = inputData.info.name;
+          if (verbose) {
+            console.log(`Postman collection loaded successfully: "${collectionName}"`);
+          }
+          postmanRequests = extractRequestsFromPostman(inputData, verbose);
+        }
       }
-
-      // 4. Extract Postman requests
-      const postmanRequests = extractRequestsFromPostman(postmanData, verbose);
 
       // 5. Match operations in a "detailed" way that returns coverageItems
       const coverageItems = matchOperationsDetailed(allSpecOperations, postmanRequests, {
@@ -128,7 +154,7 @@ program
         console.log(`APIs analyzed: ${allSpecNames.join(', ')}`);
       }
       console.log(`Total operations in spec(s): ${totalSpecOps}`);
-      console.log(`Matched operations in Postman: ${matchedCount}`);
+      console.log(`Matched operations in Postman/Newman: ${matchedCount}`);
       console.log(`Coverage: ${coverage.toFixed(2)}%`);
 
       // Also show which items are truly unmatched
@@ -152,7 +178,7 @@ program
         meta: {
           timestamp: new Date().toLocaleString(),
           specName: combinedSpecName,
-          postmanCollectionName: postmanData.info.name,
+          postmanCollectionName: collectionName,
           undocumentedRequests,
           apiCount: files.length,
           apiNames: allSpecNames

@@ -9,7 +9,7 @@ const { loadAndParseSpec, extractOperationsFromSpec } = require("./lib/swagger")
 const { loadPostmanCollection, extractRequestsFromPostman } = require("./lib/postman");
 const { loadNewmanReport, extractRequestsFromNewman } = require("./lib/newman");
 const { matchOperationsDetailed } = require("./lib/match");
-const { generateHtmlReport } = require("./lib/report");
+const { generateHtmlReport, generateHeatmapReport } = require("./lib/report");
 const { loadExcelSpec } = require("./lib/excel");
 
 const program = new Command();
@@ -27,9 +27,10 @@ program
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
   .option("--newman", "Treat input file as Newman run report instead of Postman collection")
+  .option("--heatmap", "Generate coverage heatmap (graph API with endpoints nodes, methods edges, and coverage highlighting)")
   .action(async (swaggerFiles, postmanFile, options) => {
     try {
-      const { verbose, strictQuery, strictBody, output, newman } = options;
+      const { verbose, strictQuery, strictBody, output, newman, heatmap } = options;
 
       // Parse comma-separated swagger files
       const files = swaggerFiles.includes(',') ? 
@@ -172,21 +173,33 @@ program
         `Multiple APIs (${allSpecNames.join(', ')})` : 
         allSpecNames[0];
         
-      const html = generateHtmlReport({
-        coverage,
-        coverageItems,
-        meta: {
-          timestamp: new Date().toLocaleString(),
-          specName: combinedSpecName,
-          postmanCollectionName: collectionName,
-          undocumentedRequests,
-          apiCount: files.length,
-          apiNames: allSpecNames
-        },
-      });
+      const reportMeta = {
+        timestamp: new Date().toLocaleString(),
+        specName: combinedSpecName,
+        postmanCollectionName: collectionName,
+        undocumentedRequests,
+        apiCount: files.length,
+        apiNames: allSpecNames
+      };
+
+      let html;
+      if (heatmap) {
+        html = generateHeatmapReport({
+          coverage,
+          coverageItems,
+          meta: reportMeta
+        });
+        console.log(`\nHeatmap report saved to: ${output}`);
+      } else {
+        html = generateHtmlReport({
+          coverage,
+          coverageItems,
+          meta: reportMeta
+        });
+        console.log(`\nHTML report saved to: ${output}`);
+      }
 
       fs.writeFileSync(path.resolve(output), html, "utf8");
-      console.log(`\nHTML report saved to: ${output}`);
     } catch (err) {
       console.error("Error:", err.message);
       process.exit(1);

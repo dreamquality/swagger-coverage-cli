@@ -1,0 +1,78 @@
+{
+  "info": {
+    "name": "gRPC Test Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/grpc"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"user_id\": \"123\"}"
+        },
+        "url": {
+          "raw": "http://localhost:9090/user.v1.UserService/GetUser",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "9090",
+          "path": ["user.v1.UserService", "GetUser"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/grpc"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"John Doe\", \"email\": \"john@example.com\"}"
+        },
+        "url": {
+          "raw": "http://localhost:9090/user.v1.UserService/CreateUser",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "9090",
+          "path": ["user.v1.UserService", "CreateUser"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

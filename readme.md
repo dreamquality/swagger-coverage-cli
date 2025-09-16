@@ -30,9 +30,13 @@ Check out the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
 
 ## Introduction
 
-**swagger-coverage-cli** is a tool that helps you **measure how much of your OpenAPI/Swagger-documented API is actually covered by your Postman tests**. It reads inputs from:
+**swagger-coverage-cli** is a tool that helps you **measure how much of your API documentation is actually covered by your Postman tests**. It reads inputs from:
 
-1. **Single or Multiple OpenAPI/Swagger** specifications (version 2 or 3) in either JSON or YAML format, or **CSV** files containing API documentation.
+1. **Single or Multiple API specifications** in various formats:
+   - **OpenAPI/Swagger** specifications (version 2 or 3) in JSON or YAML format
+   - **gRPC** protocol buffer files (`.proto`)
+   - **GraphQL** schema files (`.graphql`, `.gql`)
+   - **CSV** files containing API documentation
 2. A **Postman** collection (JSON) that contains requests and test scripts, **OR** a **Newman run report** (JSON) that contains actual execution results.
 
 The tool supports processing **multiple API specifications in a single run**, making it ideal for organizations managing multiple APIs or microservices. Using this information, the CLI **calculates a unified coverage percentage** and produces a **detailed HTML report** indicating which endpoints and status codes are validated across all APIs, and which are missing tests.
@@ -41,12 +45,13 @@ The tool supports processing **multiple API specifications in a single run**, ma
 
 ## Features
 
-- **Easy to Use**: Simple CLI interface with just two main arguments (the Swagger file and the Postman collection or Newman report).
+- **Easy to Use**: Simple CLI interface with just two main arguments (the API specification and the Postman collection or Newman report).
+- **Multiple Protocols**: Supports REST APIs (OpenAPI/Swagger), gRPC (Protocol Buffers), and GraphQL schemas.
 - **Multiple Input Types**: Supports both Postman collections and Newman run reports for maximum flexibility.
-- **Auto-Detection**: Automatically detects Newman report format even without explicit flags.
-- **Multiple API Support**: Process multiple Swagger/OpenAPI specifications in a single run for comprehensive API portfolio management.
+- **Auto-Detection**: Automatically detects Newman report format and API specification types.
+- **Multiple API Support**: Process multiple API specifications in a single run for comprehensive API portfolio management.
 - **Unified Reporting**: Generate consolidated reports that show coverage across all APIs while maintaining individual API identification.
-- **Strict Matching (Optional)**: Enforce strict checks for query parameters, request bodies, and more.
+- **Strict Matching (Optional)**: Enforce strict checks for query parameters, request bodies, and protocol-specific validation.
 - **HTML Reports**: Generates `coverage-report.html` that shows which endpoints are covered and which are not.
 - **Extensible**: Modular code structure (Node.js) allows customization of matching logic, query parameter checks, status code detection, etc.
 - **CSV Support**: Allows API documentation to be provided in a CSV format for flexibility and ease of use.
@@ -367,11 +372,12 @@ If all criteria are satisfied, the operation is **matched** (covered). Otherwise
 
 ## Supported File Formats
 
-**Swagger/OpenAPI/.csv**:
+**API Specifications**:
 
-- **JSON** or **YAML**
-- **OpenAPI v2 (Swagger 2.0)** or **OpenAPI v3.x**
-- **CSV**: API documentation can be provided in CSV format following the specified structure.
+- **OpenAPI/Swagger**: JSON or YAML format, v2 (Swagger 2.0) or v3.x
+- **gRPC**: Protocol Buffer files (`.proto`) 
+- **GraphQL**: Schema files (`.graphql`, `.gql`)
+- **CSV**: API documentation in CSV format following the specified structure
 
 **Postman**:
 
@@ -411,6 +417,93 @@ The tool supports two types of input for test data:
 ### Using CSV for Documentation
 
 In addition to traditional OpenAPI/Swagger specifications, **swagger-coverage-cli** supports API documentation provided in a **CSV** format. This allows for a more flexible and easily editable documentation process, especially for teams that prefer spreadsheet-based documentation.
+
+### gRPC Support
+
+**swagger-coverage-cli** now supports gRPC APIs through Protocol Buffer (`.proto`) files:
+
+#### gRPC Features:
+- **Protocol Buffer Parsing**: Automatically parses `.proto` files to extract service definitions
+- **Service and Method Detection**: Identifies all RPC methods within services
+- **gRPC-Web Compatibility**: Supports both traditional gRPC and gRPC-Web request patterns
+- **Flexible URL Matching**: Matches various gRPC URL patterns including full package paths
+
+#### Example gRPC Usage:
+
+```bash
+swagger-coverage-cli user-service.proto grpc-collection.json --strict-body
+```
+
+**Sample .proto file:**
+```protobuf
+syntax = "proto3";
+package user.v1;
+
+service UserService {
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+```
+
+#### gRPC Postman Integration:
+- Use POST method for gRPC calls
+- URL format: `http://host:port/package.service/method` or `/service/method`
+- Body should contain JSON representation of protobuf data
+- Example: `{"user_id": "123"}` for GetUserRequest
+
+### GraphQL Support
+
+**swagger-coverage-cli** supports GraphQL APIs through schema files (`.graphql` or `.gql`):
+
+#### GraphQL Features:
+- **Schema Parsing**: Automatically parses GraphQL schema files
+- **Operation Detection**: Identifies queries, mutations, and subscriptions
+- **Field-level Matching**: Matches specific GraphQL operations to Postman requests
+- **Argument Validation**: Supports field arguments and input types
+
+#### Example GraphQL Usage:
+
+```bash
+swagger-coverage-cli blog-schema.graphql graphql-collection.json --strict-body
+```
+
+**Sample .graphql file:**
+```graphql
+type Query {
+  user(id: ID!): User
+  users(first: Int, after: String): UserConnection
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): CreateUserPayload
+  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+}
+```
+
+#### GraphQL Postman Integration:
+- Use POST method to `/graphql` endpoint
+- Body should contain GraphQL query with variables
+- Example:
+```json
+{
+  "query": "query GetUser($id: ID!) { user(id: $id) { id name email } }",
+  "variables": { "id": "123" }
+}
+```
 
 #### CSV Structure
 

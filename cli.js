@@ -11,16 +11,18 @@ const { loadNewmanReport, extractRequestsFromNewman } = require("./lib/newman");
 const { matchOperationsDetailed } = require("./lib/match");
 const { generateHtmlReport } = require("./lib/report");
 const { loadExcelSpec } = require("./lib/excel");
+const { loadAndParseProto, extractOperationsFromProto } = require("./lib/grpc");
+const { loadAndParseGraphQL, extractOperationsFromGraphQL } = require("./lib/graphql");
 
 const program = new Command();
 
 program
   .name("swagger-coverage-cli")
   .description(
-    "CLI tool for comparing OpenAPI/Swagger specifications with a Postman collection or Newman run report, producing an enhanced HTML report"
+    "CLI tool for comparing API specifications (OpenAPI/Swagger, gRPC, GraphQL) with a Postman collection or Newman run report, producing an enhanced HTML report"
   )
   .version("4.0.0")
-  .argument("<swaggerFiles>", "Path(s) to the Swagger/OpenAPI file(s) (JSON or YAML). Use comma-separated values for multiple files.")
+  .argument("<swaggerFiles>", "Path(s) to the API specification file(s) (OpenAPI/Swagger JSON/YAML, gRPC .proto, GraphQL .graphql/.gql, or CSV). Use comma-separated values for multiple files.")
   .argument("<postmanCollectionOrNewmanReport>", "Path to the Postman collection (JSON) or Newman run report (JSON).")
   .option("-v, --verbose", "Show verbose debug info")
   .option("--strict-query", "Enable strict validation of query parameters")
@@ -39,24 +41,50 @@ program
       let allSpecOperations = [];
       let allSpecNames = [];
       const excelExtensions = [".xlsx", ".xls", ".csv"];
+      const grpcExtensions = [".proto"];
+      const graphqlExtensions = [".graphql", ".gql"];
 
-      // Process each swagger file
+      // Process each API specification file
       for (const swaggerFile of files) {
         const ext = path.extname(swaggerFile).toLowerCase();
         let specOperations;
         let specName;
 
         if (excelExtensions.includes(ext)) {
-          // Parse Excel
+          // Parse Excel/CSV
           specOperations = loadExcelSpec(swaggerFile);
           specName = path.basename(swaggerFile);
+        } else if (grpcExtensions.includes(ext)) {
+          // Parse gRPC proto file
+          const proto = loadAndParseProto(swaggerFile);
+          specName = proto.package || path.basename(swaggerFile, ext);
+          if (verbose) {
+            console.log(
+              "gRPC proto file loaded successfully:",
+              specName,
+              `(${proto.services.length} services)`
+            );
+          }
+          specOperations = extractOperationsFromProto(proto, verbose);
+        } else if (graphqlExtensions.includes(ext)) {
+          // Parse GraphQL schema file
+          const schema = loadAndParseGraphQL(swaggerFile);
+          specName = path.basename(swaggerFile, ext);
+          if (verbose) {
+            console.log(
+              "GraphQL schema loaded successfully:",
+              specName,
+              `(${schema.queries.length + schema.mutations.length + schema.subscriptions.length} operations)`
+            );
+          }
+          specOperations = extractOperationsFromGraphQL(schema, verbose);
         } else {
-          // Original Swagger flow
+          // Original Swagger/OpenAPI flow
           const spec = await loadAndParseSpec(swaggerFile);
           specName = spec.info.title;
           if (verbose) {
             console.log(
-              "Specification loaded successfully:",
+              "OpenAPI/Swagger specification loaded successfully:",
               specName,
               spec.info.version
             );

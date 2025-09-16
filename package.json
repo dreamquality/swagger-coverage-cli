@@ -20,6 +20,9 @@
   "keywords": [
     "swagger",
     "openapi",
+    "grpc",
+    "graphql",
+    "protobuf",
     "coverage",
     "cli",
     "postman",

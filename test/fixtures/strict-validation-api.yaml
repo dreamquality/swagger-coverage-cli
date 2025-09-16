@@ -35,6 +35,14 @@ paths:
       responses:
         '200':
           description: Users retrieved successfully
+        '400':
+          description: Bad request - invalid query parameters
+        '401':
+          description: Unauthorized - authentication required
+        '403':
+          description: Forbidden - insufficient permissions
+        '429':
+          description: Too many requests - rate limit exceeded
 
     post:
       operationId: createUserWithJsonBody
@@ -61,6 +69,12 @@ paths:
       responses:
         '201':
           description: User created successfully
+        '400':
+          description: Bad request - invalid user data
+        '409':
+          description: Conflict - user already exists
+        '422':
+          description: Unprocessable entity - validation errors
 
   /products/{id}:
     parameters:
@@ -101,6 +115,12 @@ paths:
       responses:
         '200':
           description: Product updated successfully
+        '400':
+          description: Bad request - invalid product data
+        '404':
+          description: Product not found
+        '409':
+          description: Conflict - product version mismatch
 
   /orders:
     post:
@@ -120,6 +140,10 @@ paths:
       responses:
         '201':
           description: Order created successfully
+        '400':
+          description: Bad request - invalid order data
+        '422':
+          description: Unprocessable entity - invalid form data
 
   /search:
     get:
@@ -153,3 +177,7 @@ paths:
       responses:
         '200':
           description: Search results
+        '400':
+          description: Bad request - invalid search parameters
+        '404':
+          description: No results found

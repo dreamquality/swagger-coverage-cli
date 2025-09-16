@@ -278,6 +278,175 @@
             "error": null
           }
         ]
+      },
+      {
+        "id": "exec-9",
+        "item": {
+          "name": "Get Users - Bad Request (400)",
+          "id": "item-9"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "https://api.example.com/users?status=active&limit=-1",
+            "host": ["api", "example", "com"],
+            "path": ["users"],
+            "query": [
+              {"key": "status", "value": "active"},
+              {"key": "limit", "value": "-1"}
+            ]
+          },
+          "header": []
+        },
+        "response": {
+          "status": "Bad Request",
+          "code": 400,
+          "responseTime": 120,
+          "responseSize": 256
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 400",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-10",
+        "item": {
+          "name": "Get Users - Unauthorized (401)",
+          "id": "item-10"
+        },
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "https://api.example.com/users?status=active&limit=10",
+            "host": ["api", "example", "com"],
+            "path": ["users"],
+            "query": [
+              {"key": "status", "value": "active"},
+              {"key": "limit", "value": "10"}
+            ]
+          },
+          "header": []
+        },
+        "response": {
+          "status": "Unauthorized",
+          "code": 401,
+          "responseTime": 95,
+          "responseSize": 128
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 401",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-11",
+        "item": {
+          "name": "Create User - Conflict (409)",
+          "id": "item-11"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "https://api.example.com/users",
+            "host": ["api", "example", "com"],
+            "path": ["users"]
+          },
+          "header": [
+            {"key": "Content-Type", "value": "application/json"}
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\": \"existing@example.com\", \"name\": \"John Doe\", \"age\": 25}"
+          }
+        },
+        "response": {
+          "status": "Conflict",
+          "code": 409,
+          "responseTime": 140,
+          "responseSize": 200
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 409",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-12",
+        "item": {
+          "name": "Update Product - Not Found (404)",
+          "id": "item-12"
+        },
+        "request": {
+          "method": "PATCH",
+          "url": {
+            "raw": "https://api.example.com/products/999999?validate=true",
+            "host": ["api", "example", "com"],
+            "path": ["products", "999999"],
+            "query": [
+              {"key": "validate", "value": "true"}
+            ]
+          },
+          "header": [
+            {"key": "Content-Type", "value": "application/json"}
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"Updated Product\", \"price\": 29.99}"
+          }
+        },
+        "response": {
+          "status": "Not Found",
+          "code": 404,
+          "responseTime": 110,
+          "responseSize": 150
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 404",
+            "error": null
+          }
+        ]
+      },
+      {
+        "id": "exec-13",
+        "item": {
+          "name": "Create User - Validation Error (422)",
+          "id": "item-13"
+        },
+        "request": {
+          "method": "POST",
+          "url": {
+            "raw": "https://api.example.com/users",
+            "host": ["api", "example", "com"],
+            "path": ["users"]
+          },
+          "header": [
+            {"key": "Content-Type", "value": "application/json"}
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\": \"test@example.com\"}"
+          }
+        },
+        "response": {
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "responseTime": 125,
+          "responseSize": 300
+        },
+        "assertions": [
+          {
+            "assertion": "Status is 422",
+            "error": null
+          }
+        ]
       }
     ]
   }

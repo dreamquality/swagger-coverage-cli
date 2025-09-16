@@ -202,6 +202,26 @@
       background-color: rgba(255,255,255,0.2);
     }
 
+    /* Smart Mapping Badges */
+    .primary-match-badge {
+      background-color: #4caf50;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      margin-left: 5px;
+      font-weight: bold;
+    }
+    .confidence-badge {
+      background-color: #2196f3;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      margin-left: 5px;
+      font-weight: bold;
+    }
+
     /* Nested JS Code Table */
     .js-code-row {
       display: none;
@@ -364,7 +384,7 @@
     &#128262; <!-- flashlight icon -->
   </button>
   <div class="meta-info">
-    <p><strong>Timestamp:</strong> 9/16/2025, 5:33:02 PM</p>
+    <p><strong>Timestamp:</strong> 9/16/2025, 5:41:11 PM</p>
     <p><strong>API Spec:</strong> Test API</p>
     
     <p><strong>Postman Collection:</strong> Test Newman Collection</p>
@@ -731,7 +751,18 @@
 
       const tdName = document.createElement('td');
       tdName.className = "spec-cell";
-      tdName.textContent = item.name || item.summary || item.operationId || '(No operationId in spec)';
+      let nameContent = item.name || item.summary || item.operationId || '(No operationId in spec)';
+      
+      // Add smart mapping indicators
+      if (item.isPrimaryMatch) {
+        nameContent += ' <span class="primary-match-badge" title="Primary Match">⭐</span>';
+      }
+      if (item.matchConfidence && item.matchConfidence < 1.0) {
+        const confidence = Math.round(item.matchConfidence * 100);
+        nameContent += ' <span class="confidence-badge" title="Match Confidence: ' + confidence + '%">' + confidence + '%</span>';
+      }
+      
+      tdName.innerHTML = nameContent;
 
       const tdStatus = document.createElement('td');
       tdStatus.className = "spec-cell";

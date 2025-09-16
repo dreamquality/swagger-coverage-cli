@@ -25,11 +25,12 @@ program
   .option("-v, --verbose", "Show verbose debug info")
   .option("--strict-query", "Enable strict validation of query parameters")
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
+  .option("--negative-testing", "Enable comprehensive negative testing analysis")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
   .option("--newman", "Treat input file as Newman run report instead of Postman collection")
   .action(async (swaggerFiles, postmanFile, options) => {
     try {
-      const { verbose, strictQuery, strictBody, output, newman } = options;
+      const { verbose, strictQuery, strictBody, negativeTesting, output, newman } = options;
 
       // Parse comma-separated swagger files
       const files = swaggerFiles.includes(',') ? 
@@ -156,6 +157,41 @@ program
       console.log(`Total operations in spec(s): ${totalSpecOps}`);
       console.log(`Matched operations in Postman/Newman: ${matchedCount}`);
       console.log(`Coverage: ${coverage.toFixed(2)}%`);
+
+      // Add negative testing analysis if enabled
+      if (negativeTesting) {
+        const { calculateNegativeTestingMetrics } = require('./lib/report');
+        const negativeMetrics = calculateNegativeTestingMetrics(coverageItems);
+        
+        console.log("\n=== Negative Testing Analysis ===");
+        console.log(`Positive Test Coverage: ${negativeMetrics.positive.coverage.toFixed(1)}% (${negativeMetrics.positive.matched}/${negativeMetrics.positive.total})`);
+        console.log(`Negative Test Coverage: ${negativeMetrics.negative.coverage.toFixed(1)}% (${negativeMetrics.negative.matched}/${negativeMetrics.negative.total})`);
+        
+        // Show error status distribution
+        if (Object.keys(negativeMetrics.errorDistribution).length > 0) {
+          console.log("\nError Status Code Coverage:");
+          Object.entries(negativeMetrics.errorDistribution).forEach(([statusCode, data]) => {
+            console.log(` - ${statusCode}: ${data.coverage.toFixed(1)}% (${data.matched}/${data.total})`);
+          });
+        }
+
+        // Calculate and show quality score
+        const errorStatusScore = negativeMetrics.negative.coverage;
+        const totalTests = negativeMetrics.positive.total + negativeMetrics.negative.total;
+        const negativeRatio = totalTests > 0 ? (negativeMetrics.negative.total / totalTests) * 100 : 0;
+        const idealRatio = 30;
+        const ratioScore = Math.max(0, 100 - Math.abs(negativeRatio - idealRatio) * 2);
+        const qualityScore = (errorStatusScore * 0.6) + (ratioScore * 0.4);
+        
+        let assessment = '';
+        if (qualityScore >= 80) assessment = '🏆 Excellent';
+        else if (qualityScore >= 60) assessment = '✅ Good';
+        else if (qualityScore >= 40) assessment = '⚠️ Fair';
+        else assessment = '❌ Poor';
+        
+        console.log(`\nNegative Testing Quality Score: ${qualityScore.toFixed(1)}/100 (${assessment})`);
+        console.log(`Negative Test Ratio: ${negativeRatio.toFixed(1)}% (recommended: 20-30%)`);
+      }
 
       // Also show which items are truly unmatched
       const unmatchedItems = coverageItems.filter(item => item.unmatched);

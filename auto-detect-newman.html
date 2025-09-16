@@ -128,6 +128,130 @@
       position: relative;
     }
 
+    /* Negative Testing Section Styles */
+    .negative-testing-section {
+      margin: 32px 16px;
+      padding: 24px;
+      background: var(--md-surface-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .negative-testing-section h2 {
+      margin-top: 0;
+      color: var(--md-primary-color);
+    }
+
+    .negative-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .metric-card {
+      background: var(--md-bg-color);
+      border: 1px solid var(--md-border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .metric-card h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 1.1em;
+      color: var(--md-text-color);
+    }
+
+    .negative-testing-summary {
+      margin-top: 8px;
+      padding: 8px 0;
+      border-top: 1px solid var(--md-border-color);
+    }
+
+    .negative-testing-summary p {
+      margin: 4px 0;
+      font-size: 0.9em;
+    }
+
+    /* Negative Testing Metrics Styles */
+    .status-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status-metric-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      color: white;
+      font-size: 0.8em;
+      font-weight: bold;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .metric-text {
+      font-size: 0.9em;
+    }
+
+    .quality-score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-circle {
+      width: 80px;
+      height: 80px;
+      border: 4px solid;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .score-number {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .score-label {
+      font-size: 0.7em;
+      opacity: 0.7;
+    }
+
+    .score-assessment {
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+
+    .recommendations-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .rec-item, .rec-success {
+      padding: 4px 0;
+      font-size: 0.9em;
+      line-height: 1.4;
+    }
+
+    .rec-success {
+      color: #4caf50;
+    }
+
     .filter-container {
       padding: 0 16px 16px 16px;
       display: flex;
@@ -364,13 +488,17 @@
     &#128262; <!-- flashlight icon -->
   </button>
   <div class="meta-info">
-    <p><strong>Timestamp:</strong> 9/16/2025, 5:34:19 PM</p>
+    <p><strong>Timestamp:</strong> 9/16/2025, 5:44:43 PM</p>
     <p><strong>API Spec:</strong> Test API</p>
     
     <p><strong>Postman Collection:</strong> Test Newman Collection</p>
     <p><strong>Coverage:</strong> 40.00%</p>
     <p>Covered: 40.00%<br/>
     Not Covered: 60.00%</p>
+    <div class="negative-testing-summary">
+      <p><strong>Positive Test Coverage:</strong> 66.7% (2/3)</p>
+      <p><strong>Negative Test Coverage:</strong> 0.0% (0/2)</p>
+    </div>
   </div>
 </header>
 
@@ -396,6 +524,31 @@
   <div class="chart-container">
     <canvas id="tagChart"></canvas>
     <div class="chart-title">Coverage by Tag</div>
+  </div>
+
+  <!-- Negative Testing Chart -->
+  <div class="chart-container">
+    <canvas id="negativeTestChart"></canvas>
+    <div class="chart-title">Positive vs Negative Testing</div>
+  </div>
+</section>
+
+<!-- Negative Testing Metrics Section -->
+<section class="negative-testing-section">
+  <h2>🧪 Negative Testing Analysis</h2>
+  <div class="negative-metrics-grid">
+    <div class="metric-card">
+      <h3>Error Status Coverage</h3>
+      <div id="errorStatusMetrics"></div>
+    </div>
+    <div class="metric-card">
+      <h3>Testing Quality Score</h3>
+      <div id="qualityScore"></div>
+    </div>
+    <div class="metric-card">
+      <h3>Recommendations</h3>
+      <div id="testingRecommendations"></div>
+    </div>
   </div>
 </section>
 
@@ -443,6 +596,7 @@
   // coverageData from server
   let coverageData = [{"method":"GET","path":"/users","name":"getUsers","statusCode":"200","tags":[],"expectedStatusCodes":["200"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":false,"matchedRequests":[{"name":"Get Users","rawUrl":"https://api.example.com/users","method":"GET","testedStatusCodes":["200"],"testScripts":"// Status code is 200"}]},{"method":"POST","path":"/users","name":"createUser","statusCode":"201","tags":[],"expectedStatusCodes":["201","400"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":false,"matchedRequests":[{"name":"Create User","rawUrl":"https://api.example.com/users","method":"POST","testedStatusCodes":["201"],"testScripts":"// Status code is 201"}]},{"method":"POST","path":"/users","name":"createUser","statusCode":"400","tags":[],"expectedStatusCodes":["201","400"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"200","tags":[],"expectedStatusCodes":["200","404"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":true,"matchedRequests":[]},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"404","tags":[],"expectedStatusCodes":["200","404"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":true,"matchedRequests":[]}];
   let apiCount = 1;
+  let negativeMetrics = {"positive":{"total":3,"matched":2,"coverage":66.66666666666666},"negative":{"total":2,"matched":0,"coverage":0},"errorDistribution":{"400":{"total":1,"matched":0,"coverage":0},"404":{"total":1,"matched":0,"coverage":0}}};
 
   // Merge duplicates for display only
   function unifyByMethodAndPath(items) {
@@ -489,6 +643,8 @@
     renderCoverageChart(40.00);
     renderTrendChart();
     renderTagChart();
+    renderNegativeTestingChart();
+    renderNegativeTestingMetrics();
     renderTable();
   };
 
@@ -617,6 +773,176 @@
         }
       }
     });
+  }
+
+  // Render negative testing chart
+  function renderNegativeTestingChart() {
+    const ctx = document.getElementById('negativeTestChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Positive Tests', 'Negative Tests'],
+        datasets: [{
+          data: [negativeMetrics.positive.coverage, negativeMetrics.negative.coverage],
+          backgroundColor: ['#4caf50', '#ff9800']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed;
+                const isPositive = context.dataIndex === 0;
+                const counts = isPositive ? 
+                  `${negativeMetrics.positive.matched}/${negativeMetrics.positive.total}` :
+                  `${negativeMetrics.negative.matched}/${negativeMetrics.negative.total}`;
+                return `${label}: ${value.toFixed(1)}% (${counts})`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Render negative testing metrics
+  function renderNegativeTestingMetrics() {
+    // Error Status Metrics
+    const errorStatusContainer = document.getElementById('errorStatusMetrics');
+    let errorHtml = '<div class="status-metrics">';
+    
+    Object.entries(negativeMetrics.errorDistribution).forEach(([statusCode, data]) => {
+      const statusColor = getStatusCodeColor(statusCode);
+      errorHtml += `
+        <div class="status-metric-item">
+          <span class="status-badge" style="background-color: ${statusColor};">${statusCode}</span>
+          <span class="metric-text">${data.coverage.toFixed(1)}% (${data.matched}/${data.total})</span>
+        </div>
+      `;
+    });
+    errorHtml += '</div>';
+    errorStatusContainer.innerHTML = errorHtml;
+
+    // Quality Score
+    const qualityScoreContainer = document.getElementById('qualityScore');
+    const qualityScore = calculateQualityScore();
+    const scoreColor = getScoreColor(qualityScore);
+    qualityScoreContainer.innerHTML = `
+      <div class="quality-score">
+        <div class="score-circle" style="border-color: ${scoreColor};">
+          <span class="score-number" style="color: ${scoreColor};">${qualityScore.toFixed(0)}</span>
+          <span class="score-label">/ 100</span>
+        </div>
+        <div class="score-assessment">${getScoreAssessment(qualityScore)}</div>
+      </div>
+    `;
+
+    // Recommendations
+    const recommendationsContainer = document.getElementById('testingRecommendations');
+    const recommendations = generateTestingRecommendations();
+    let recHtml = '<ul class="recommendations-list">';
+    if (recommendations.length === 0) {
+      recHtml += '<li class="rec-success">✅ Good negative test coverage detected!</li>';
+    } else {
+      recommendations.forEach(rec => {
+        recHtml += `<li class="rec-item">⚠️ ${rec}</li>`;
+      });
+    }
+    recHtml += '</ul>';
+    recommendationsContainer.innerHTML = recHtml;
+  }
+
+  // Helper function to get status code color
+  function getStatusCodeColor(statusCode) {
+    if (statusCode.startsWith('2')) return '#4caf50'; // Green for 2xx
+    if (statusCode.startsWith('4')) return '#ff9800'; // Orange for 4xx
+    if (statusCode.startsWith('5')) return '#f44336'; // Red for 5xx
+    return '#9e9e9e'; // Gray for others
+  }
+
+  // Helper function to calculate quality score
+  function calculateQualityScore() {
+    const weights = {
+      errorStatusCoverage: 0.6,    // 60% weight for error status coverage
+      positiveNegativeRatio: 0.4   // 40% weight for positive/negative ratio
+    };
+
+    const errorStatusScore = negativeMetrics.negative.coverage;
+    
+    // Calculate positive/negative ratio score (ideal ratio is around 70/30)
+    const totalTests = negativeMetrics.positive.total + negativeMetrics.negative.total;
+    const negativeRatio = totalTests > 0 ? (negativeMetrics.negative.total / totalTests) * 100 : 0;
+    const idealRatio = 30; // 30% negative tests is ideal
+    const ratioScore = Math.max(0, 100 - Math.abs(negativeRatio - idealRatio) * 2);
+
+    return (errorStatusScore * weights.errorStatusCoverage) + 
+           (ratioScore * weights.positiveNegativeRatio);
+  }
+
+  // Helper function to get score color
+  function getScoreColor(score) {
+    if (score >= 80) return '#4caf50'; // Green
+    if (score >= 60) return '#ff9800'; // Orange
+    if (score >= 40) return '#ffeb3b'; // Yellow
+    return '#f44336'; // Red
+  }
+
+  // Helper function to get score assessment
+  function getScoreAssessment(score) {
+    if (score >= 80) return '🏆 Excellent';
+    if (score >= 60) return '✅ Good';
+    if (score >= 40) return '⚠️ Fair';
+    return '❌ Poor';
+  }
+
+  // Helper function to generate testing recommendations
+  function generateTestingRecommendations() {
+    const recommendations = [];
+
+    // Check for missing authentication/authorization tests
+    const authOps = coverageData.filter(item => 
+      item.statusCode === '401' || item.statusCode === '403'
+    );
+    const unmatchedAuthOps = authOps.filter(item => item.unmatched);
+    if (unmatchedAuthOps.length > 0) {
+      recommendations.push('Add authentication/authorization negative tests');
+    }
+
+    // Check for missing validation error tests
+    const validationOps = coverageData.filter(item => 
+      item.statusCode === '400' || item.statusCode === '422'
+    );
+    const unmatchedValidationOps = validationOps.filter(item => item.unmatched);
+    if (unmatchedValidationOps.length > 0) {
+      recommendations.push('Add input validation negative tests');
+    }
+
+    // Check for missing resource not found tests
+    const notFoundOps = coverageData.filter(item => item.statusCode === '404');
+    const unmatchedNotFoundOps = notFoundOps.filter(item => item.unmatched);
+    if (unmatchedNotFoundOps.length > 0) {
+      recommendations.push('Add resource not found tests');
+    }
+
+    // Check for missing conflict tests
+    const conflictOps = coverageData.filter(item => item.statusCode === '409');
+    const unmatchedConflictOps = conflictOps.filter(item => item.unmatched);
+    if (unmatchedConflictOps.length > 0) {
+      recommendations.push('Add resource conflict tests');
+    }
+
+    // Check negative test ratio
+    const totalTests = negativeMetrics.positive.total + negativeMetrics.negative.total;
+    const negativeRatio = totalTests > 0 ? (negativeMetrics.negative.total / totalTests) * 100 : 0;
+    if (negativeRatio < 20) {
+      recommendations.push('Increase negative test coverage (recommended: 20-30%)');
+    }
+
+    return recommendations;
   }
 
   // Export PDF via window.print() approach

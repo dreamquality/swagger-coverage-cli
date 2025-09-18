@@ -86,7 +86,7 @@ describe('Smart Mapping CLI Integration', () => {
     const testCollectionPath = path.resolve(__dirname, 'fixtures', 'test-collection.json');
 
     const { stdout } = await execAsync(
-      `node cli.js "${usersApiPath},${productsApiPath}" "${testCollectionPath}" --smart-mapping --verbose`,
+      `node cli.js "${usersApiPath},${productsApiPath}" "${testCollectionPath}" --verbose`,
       { cwd: path.resolve(__dirname, '..') }
     );
 
@@ -102,7 +102,7 @@ describe('Smart Mapping CLI Integration', () => {
     const strictCollectionPath = path.resolve(__dirname, 'fixtures', 'strict-validation-collection.json');
 
     const { stdout } = await execAsync(
-      `node cli.js "${strictApiPath}" "${strictCollectionPath}" --smart-mapping --strict-query --strict-body --verbose`,
+      `node cli.js "${strictApiPath}" "${strictCollectionPath}" --strict-query --strict-body --verbose`,
       { cwd: path.resolve(__dirname, '..') }
     );
 
@@ -119,7 +119,7 @@ describe('Smart Mapping CLI Integration', () => {
 
   test('should generate HTML reports with smart mapping indicators', async () => {
     const { stdout } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --smart-mapping --output smart-test-report.html`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --output smart-test-report.html`,
       { cwd: path.resolve(__dirname, '..') }
     );
 
@@ -148,7 +148,7 @@ describe('Smart Mapping CLI Integration', () => {
     }
 
     const { stdout } = await execAsync(
-      `node cli.js "${csvApiPath}" "${testCollectionPath}" --smart-mapping --verbose`,
+      `node cli.js "${csvApiPath}" "${testCollectionPath}" --verbose`,
       { cwd: path.resolve(__dirname, '..') }
     );
 
@@ -172,7 +172,7 @@ describe('Smart Mapping CLI Integration', () => {
 
     try {
       const { stdout } = await execAsync(
-        `node cli.js "${sampleApiPath}" "${emptyCollectionPath}" --smart-mapping --verbose`,
+        `node cli.js "${sampleApiPath}" "${emptyCollectionPath}" --verbose`,
         { cwd: path.resolve(__dirname, '..') }
       );
 

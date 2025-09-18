@@ -42,9 +42,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
       
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false,
-        strictBody: false,
-        smartMapping: true
+        strictQuery: false
+        strictBody: false
+
       });
 
       const endTime = Date.now();
@@ -128,9 +128,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
       expect(() => {
         const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
           verbose: false,
-          strictQuery: false,
-          strictBody: false,
-          smartMapping: true
+          strictQuery: false
+          strictBody: false
+
         });
         expect(coverageItems).toBeDefined();
       }).not.toThrow();
@@ -169,9 +169,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
       expect(() => {
         const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
           verbose: false,
-          strictQuery: false,
-          strictBody: false,
-          smartMapping: true
+          strictQuery: false
+          strictBody: false
+
         });
         expect(coverageItems).toBeDefined();
       }).not.toThrow();
@@ -181,9 +181,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
       expect(() => {
         const coverageItems = matchOperationsDetailed([], [], {
           verbose: false,
-          strictQuery: false,
-          strictBody: false,
-          smartMapping: true
+          strictQuery: false
+          strictBody: false
+
         });
         expect(coverageItems).toEqual([]);
       }).not.toThrow();
@@ -226,9 +226,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
       expect(() => {
         const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
           verbose: false,
-          strictQuery: false,
-          strictBody: false,
-          smartMapping: true
+          strictQuery: false
+          strictBody: false
+
         });
         expect(coverageItems).toBeDefined();
         expect(coverageItems.length).toBe(3);
@@ -341,9 +341,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false,
-        strictBody: false,
-        smartMapping: true
+        strictQuery: false
+        strictBody: false
+
       });
 
       const matched = coverageItems.filter(item => !item.unmatched);
@@ -387,9 +387,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false,
-        strictBody: false,
-        smartMapping: true
+        strictQuery: false
+        strictBody: false
+
       });
 
       const matched = coverageItems.filter(item => !item.unmatched);
@@ -462,9 +462,9 @@ describe('Smart Mapping Stress Tests and Performance', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false,
-        strictBody: false,
-        smartMapping: true
+        strictQuery: false
+        strictBody: false
+
       });
 
       const matched = coverageItems.filter(item => !item.unmatched);

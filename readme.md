@@ -367,7 +367,7 @@ If all criteria are satisfied, the operation is **matched** (covered). Otherwise
 
 ## Smart Endpoint Mapping
 
-**Smart endpoint mapping** is an advanced feature that significantly improves coverage accuracy by using intelligent algorithms to match endpoints. Enable it with the `--smart-mapping` flag.
+**Smart endpoint mapping** is an advanced feature that significantly improves coverage accuracy by using intelligent algorithms to match endpoints. It is **enabled by default** in all operations.
 
 ### Key Benefits
 
@@ -380,8 +380,8 @@ If all criteria are satisfied, the operation is **matched** (covered). Otherwise
 ### Quick Start
 
 ```bash
-# Enable smart mapping
-swagger-coverage-cli api-spec.yaml collection.json --smart-mapping --verbose
+# Smart mapping is enabled by default
+swagger-coverage-cli api-spec.yaml collection.json --verbose
 
 # Output shows smart mapping statistics:
 # Smart mapping: 6 primary matches, 3 secondary matches

@@ -53,7 +53,7 @@ describe('Multi-API Match Module', () => {
 
     const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
       verbose: false,
-      strictQuery: false,
+      strictQuery: false
       strictBody: false
     });
 
@@ -84,7 +84,7 @@ describe('Multi-API Match Module', () => {
 
     const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
       verbose: false,
-      strictQuery: false,
+      strictQuery: false
       strictBody: false
     });
 
@@ -221,7 +221,7 @@ describe('Multi-API Match Module', () => {
     // Match operations
     const coverageItems = matchOperationsDetailed(allSpecOps, postmanRequests, {
       verbose: false,
-      strictQuery: false,
+      strictQuery: false
       strictBody: false
     });
 
@@ -364,7 +364,7 @@ describe('Multi-API Match Module', () => {
 
     const coverageItems = matchOperationsDetailed(specOps, postmanRequests, {
       verbose: false,
-      strictQuery: false,
+      strictQuery: false
       strictBody: false
     });
 
@@ -461,7 +461,7 @@ describe('Multi-API Match Module', () => {
 
     const coverageItems = matchOperationsDetailed(allOps, postmanReqs, {
       verbose: false,
-      strictQuery: false,
+      strictQuery: false
       strictBody: false
     });
 
@@ -513,7 +513,7 @@ describe('Multi-API Match Module', () => {
 
     const coverageItems = matchOperationsDetailed(allOps, postmanRequests, {
       verbose: false,
-      strictQuery: false,
+      strictQuery: false
       strictBody: false
     });
 

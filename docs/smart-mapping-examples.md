@@ -19,17 +19,17 @@ This document provides comprehensive examples and use cases for the smart endpoi
 
 ## Quick Start
 
-Enable smart mapping with the `--smart-mapping` flag:
+Smart mapping is **enabled by default** and provides improved coverage accuracy:
 
 ```bash
-# Basic usage
-swagger-coverage-cli api-spec.yaml collection.json --smart-mapping
+# Basic usage - smart mapping enabled automatically
+swagger-coverage-cli api-spec.yaml collection.json
 
 # With verbose output to see smart mapping statistics
-swagger-coverage-cli api-spec.yaml collection.json --smart-mapping --verbose
+swagger-coverage-cli api-spec.yaml collection.json --verbose
 
 # With Newman reports
-swagger-coverage-cli api-spec.yaml newman-report.json --newman --smart-mapping
+swagger-coverage-cli api-spec.yaml newman-report.json --newman
 ```
 
 **Coverage Improvement Example:**
@@ -529,7 +529,7 @@ Complete command-line usage examples for various scenarios.
 ### Example 16: Basic Smart Mapping
 
 ```bash
-# Enable smart mapping
+# Smart mapping is enabled by default
 swagger-coverage-cli api-spec.yaml collection.json --smart-mapping
 
 # Output:
@@ -541,7 +541,7 @@ swagger-coverage-cli api-spec.yaml collection.json --smart-mapping
 
 ```bash
 # Detailed output with statistics
-swagger-coverage-cli api-spec.yaml collection.json --smart-mapping --verbose
+swagger-coverage-cli api-spec.yaml collection.json --verbose
 
 # Output:
 # Specification loaded successfully: My API 1.0.0
@@ -556,7 +556,7 @@ swagger-coverage-cli api-spec.yaml collection.json --smart-mapping --verbose
 ```bash
 # Combine smart mapping with strict validation
 swagger-coverage-cli api-spec.yaml collection.json \
-  --smart-mapping \
+  \
   --strict-query \
   --strict-body \
   --verbose
@@ -572,7 +572,7 @@ swagger-coverage-cli api-spec.yaml collection.json \
 # Multiple API specifications
 swagger-coverage-cli users-api.yaml,products-api.yaml,orders-api.yaml \
   collection.json \
-  --smart-mapping \
+  \
   --verbose
 
 # Output:
@@ -589,7 +589,7 @@ swagger-coverage-cli users-api.yaml,products-api.yaml,orders-api.yaml \
 # Newman report analysis
 swagger-coverage-cli api-spec.yaml newman-report.json \
   --newman \
-  --smart-mapping \
+  \
   --output smart-newman-report.html
 
 # Output includes execution data:
@@ -615,7 +615,7 @@ swagger-coverage-cli analytics-api.csv collection.json --smart-mapping
 ```bash
 # Handle large API specifications efficiently
 swagger-coverage-cli large-api-spec.yaml large-collection.json \
-  --smart-mapping \
+  \
   --verbose
 
 # Output:
@@ -712,7 +712,7 @@ swagger-coverage-cli api-spec.yaml collection.json --smart-mapping
 ### Recommendation 2: Use Verbose Mode for Insights
 
 ```bash
-swagger-coverage-cli api-spec.yaml collection.json --smart-mapping --verbose
+swagger-coverage-cli api-spec.yaml collection.json --verbose
 ```
 
 **Benefits:**
@@ -724,7 +724,7 @@ swagger-coverage-cli api-spec.yaml collection.json --smart-mapping --verbose
 
 ```bash
 swagger-coverage-cli api-spec.yaml collection.json \
-  --smart-mapping \
+  \
   --strict-query \
   --strict-body
 ```
@@ -755,7 +755,7 @@ swagger-coverage-cli gateway.yaml,user-service.yaml,order-service.yaml collectio
 
 ```bash
 swagger-coverage-cli api-spec.yaml collection.json \
-  --smart-mapping \
+  \
   --output detailed-smart-report.html
 ```
 
@@ -784,8 +784,8 @@ Smart endpoint mapping significantly improves API coverage accuracy through:
 - **Sub-5-second performance** for 1000+ operations
 - **100% backward compatibility** with existing functionality
 
-Enable smart mapping today to get more accurate API coverage insights!
+Smart mapping is **enabled by default** for all operations to provide more accurate API coverage insights!
 
 ```bash
-swagger-coverage-cli your-api-spec.yaml your-collection.json --smart-mapping --verbose
+swagger-coverage-cli your-api-spec.yaml your-collection.json --verbose
 ```

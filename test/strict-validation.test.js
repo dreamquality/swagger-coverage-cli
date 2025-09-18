@@ -117,7 +117,7 @@ describe('Strict Query and Body Validation Tests', () => {
     test('should allow matching without strict query validation (default behavior)', () => {
       const coverageItems = matchOperationsDetailed(strictSpecOperations, strictPostmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: false
       });
 
@@ -143,7 +143,7 @@ describe('Strict Query and Body Validation Tests', () => {
     test('should match when request body is valid JSON for application/json endpoints', () => {
       const coverageItems = matchOperationsDetailed(strictSpecOperations, strictPostmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: true
       });
 
@@ -160,7 +160,7 @@ describe('Strict Query and Body Validation Tests', () => {
     test('should not match when request body is invalid JSON for application/json endpoints', () => {
       const coverageItems = matchOperationsDetailed(strictSpecOperations, strictPostmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: true
       });
 
@@ -177,7 +177,7 @@ describe('Strict Query and Body Validation Tests', () => {
     test('should not match when request body mode is not raw for application/json endpoints', () => {
       const coverageItems = matchOperationsDetailed(strictSpecOperations, strictPostmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: true
       });
 
@@ -194,7 +194,7 @@ describe('Strict Query and Body Validation Tests', () => {
     test('should match non-JSON endpoints regardless of body type when strict body is enabled', () => {
       const coverageItems = matchOperationsDetailed(strictSpecOperations, strictPostmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: true
       });
 
@@ -212,7 +212,7 @@ describe('Strict Query and Body Validation Tests', () => {
     test('should allow matching without strict body validation (default behavior)', () => {
       const coverageItems = matchOperationsDetailed(strictSpecOperations, strictPostmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: false
       });
 
@@ -261,7 +261,7 @@ describe('Strict Query and Body Validation Tests', () => {
       // Test without strict validation
       const lenientCoverage = matchOperationsDetailed(strictSpecOperations, strictPostmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: false
       });
 
@@ -308,7 +308,7 @@ describe('Strict Query and Body Validation Tests', () => {
     test('should apply strict body validation to Newman reports', () => {
       const coverageItems = matchOperationsDetailed(strictSpecOperations, strictNewmanRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: true
       });
 
@@ -375,7 +375,7 @@ describe('Strict Query and Body Validation Tests', () => {
 
       const coverageItems = matchOperationsDetailed(noBodyOps, noBodyRequests, {
         verbose: false,
-        strictQuery: false,
+        strictQuery: false
         strictBody: true
       });
 

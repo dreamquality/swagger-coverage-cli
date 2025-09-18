@@ -25,12 +25,11 @@ program
   .option("-v, --verbose", "Show verbose debug info")
   .option("--strict-query", "Enable strict validation of query parameters")
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
-  .option("--smart-mapping", "Enable smart endpoint mapping with status code prioritization")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
   .option("--newman", "Treat input file as Newman run report instead of Postman collection")
   .action(async (swaggerFiles, postmanFile, options) => {
     try {
-      const { verbose, strictQuery, strictBody, smartMapping, output, newman } = options;
+      const { verbose, strictQuery, strictBody, output, newman } = options;
 
       // Parse comma-separated swagger files
       const files = swaggerFiles.includes(',') ? 
@@ -131,7 +130,6 @@ program
         verbose,
         strictQuery,
         strictBody,
-        smartMapping,
       });
 
       // Collect matched request names

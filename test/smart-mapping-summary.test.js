@@ -31,7 +31,7 @@ describe('Smart Mapping Test Coverage Summary', () => {
 
   test('should demonstrate all smart mapping features', async () => {
     const { stdout } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --smart-mapping --verbose`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --verbose`,
       { cwd: path.resolve(__dirname, '..') }
     );
 

@@ -1,12 +1,14 @@
 {
   "name": "swagger-coverage-cli",
-  "version": "5.0.0",
-  "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections or Newman run reports.",
+  "version": "6.0.0",
+  "description": "A Node.js CLI tool to measure test coverage of Swagger/OpenAPI specs using Postman collections or Newman run reports. Features smart endpoint mapping with intelligent status code prioritization and enhanced path matching.",
   "main": "cli.js",
   "files": [
     "cli.js",
     "lib/",
+    "docs/",
     "readme.md",
+    "CHANGELOG.md",
     "package.json",
     "LICENSE"
   ],
@@ -15,7 +17,11 @@
   },
   "scripts": {
     "test": "jest",
-    "prepublishOnly": "npm test"
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "node cli.js --help > /dev/null && echo 'CLI syntax check passed'",
+    "prepublishOnly": "npm test && npm run lint",
+    "postinstall": "echo 'Thank you for installing swagger-coverage-cli! Run with --help for usage info.'"
   },
   "keywords": [
     "swagger",
@@ -28,7 +34,13 @@
     "multi-api",
     "microservices",
     "api-testing",
-    "test-coverage"
+    "test-coverage",
+    "smart-mapping",
+    "endpoint-mapping",
+    "api-coverage",
+    "status-code",
+    "path-matching",
+    "confidence-scoring"
   ],
   "author": "Alex <dreamquality337@gmail.com>",
   "license": "ISC",

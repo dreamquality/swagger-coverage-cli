@@ -1,0 +1,36 @@
+# .npmignore
+# Test files
+test/
+*.test.js
+jest.config.js
+coverage/
+
+# Development files
+.github/
+assets/
+auto-detect-newman.html
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+*-report.html
+*test-report.html
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env*

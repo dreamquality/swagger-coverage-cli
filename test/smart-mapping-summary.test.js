@@ -152,25 +152,23 @@ describe('Smart Mapping Test Coverage Summary', () => {
   }, 10000);
 
   test('coverage improvement metrics', async () => {
-    // Test the core value proposition - coverage improvement
-    const { stdout: normalOutput } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman`,
-      { cwd: path.resolve(__dirname, '..') }
-    );
-
+    // Test that smart mapping (enabled by default) provides good coverage
     const { stdout: smartOutput } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --verbose`,
       { cwd: path.resolve(__dirname, '..') }
     );
 
-    const normalCoverage = parseFloat(normalOutput.match(/Coverage: ([\d.]+)%/)[1]);
     const smartCoverage = parseFloat(smartOutput.match(/Coverage: ([\d.]+)%/)[1]);
     
-    const improvement = smartCoverage - normalCoverage;
+    // Smart mapping should provide at least 50% coverage (the known improvement)
+    expect(smartCoverage).toBeGreaterThanOrEqual(50.0);
     
-    expect(improvement).toBeGreaterThan(0);
-    expect(improvement).toBeGreaterThanOrEqual(5.5); // Should improve by at least 5.5 percentage points
+    // Verify smart mapping statistics are present
+    expect(smartOutput).toContain('Smart mapping:');
+    expect(smartOutput).toContain('primary matches');
+    expect(smartOutput).toContain('secondary matches');
     
-    console.log(`📈 Coverage improvement: ${normalCoverage}% → ${smartCoverage}% (+${improvement.toFixed(2)} percentage points)`);
+    console.log(`📈 Smart mapping coverage achieved: ${smartCoverage}% (enabled by default)`);
+    console.log(`🎯 Expected minimum coverage: 50.00%`);
   }, 15000);
 });

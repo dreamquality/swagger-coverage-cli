@@ -383,7 +383,7 @@ describe('Newman Visual Report Tests', () => {
 
     // Newman should have better coverage
     expect(newmanCoveragePercent).toBeGreaterThan(postmanCoveragePercent);
-    expect(postmanCoveragePercent).toBe(0); // No operations matched due to strict matching
+    expect(postmanCoveragePercent).toBe(20); // Smart mapping finds some matches
     expect(newmanCoveragePercent).toBe(40); // 2 out of 5 operations (GET /users 200, POST /users 201)
 
     // Generate HTML reports for both

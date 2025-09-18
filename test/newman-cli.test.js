@@ -311,7 +311,7 @@ paths:
         
         // Check console output
         expect(stdout).toContain('Complex Newman Collection');
-        expect(stdout).toContain('Coverage: 60.00%'); // 3 out of 5 operations covered
+        expect(stdout).toContain('Coverage: 100.00%'); // All 5 operations covered with smart mapping
         expect(stdout).toContain('HTML report saved to: complex-newman-cli-test.html');
 
         // Check that HTML file was created and contains expected data
@@ -319,7 +319,7 @@ paths:
         
         const htmlContent = fs.readFileSync(outputFile, 'utf8');
         expect(htmlContent).toContain('Complex Newman Collection');
-        expect(htmlContent).toContain('60.00%');
+        expect(htmlContent).toContain('100.00%');
         expect(htmlContent).toContain('Get Users - Success');
         expect(htmlContent).toContain('Get User by ID - Not Found');
         expect(htmlContent).toContain('Create User - Validation Error');
@@ -411,7 +411,7 @@ paths:
     postmanChild.on('close', (postmanCode) => {
       try {
         expect(postmanCode).toBe(0);
-        expect(postmanStdout).toContain('Coverage: 0.00%'); // No operations matched due to strict matching
+        expect(postmanStdout).toContain('Coverage: 20.00%'); // Smart mapping finds some matches
 
         // Now test Newman report
         const newmanOutputFile = 'newman-comparison.html';

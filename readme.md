@@ -371,7 +371,7 @@ If all criteria are satisfied, the operation is **matched** (covered). Otherwise
 
 ### Key Benefits
 
-- **5.56 percentage point improvement** in coverage accuracy (44.44% → 50.00%)
+- Enhanced path matching for better parameter recognition
 - **Status Code Prioritization**: Prioritizes successful (2xx) status codes over error codes
 - **Enhanced Path Matching**: Better handling of parameter variations and naming conventions
 - **Confidence Scoring**: Assigns quality scores to matches (0.0-1.0)

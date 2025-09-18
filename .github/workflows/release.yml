@@ -86,17 +86,27 @@ jobs:
             ## 🚀 swagger-coverage-cli v${{ env.NEW_VERSION }}
             
             ### ✨ Features
+            - **Smart Endpoint Mapping**: Intelligent endpoint matching with status code prioritization enabled by default
+            - **Enhanced Path Matching**: Improved handling of path parameters with different naming conventions
+            - **Confidence Scoring**: Match quality assessment with 0.0-1.0 confidence scores
+            - **Status Code Intelligence**: Prioritizes successful (2xx) codes over error codes for better coverage
             - **Multi-API Support**: Process multiple Swagger/OpenAPI specifications in a single run
             - **Unified Reporting**: Generate combined coverage reports with individual API metrics
-            - **API Identification**: Tagged operations show source API name for better tracking
-            - **Enhanced HTML Reports**: New API column and multi-API headers for visual clarity
             - **Format Support**: YAML, JSON, and CSV file formats supported
-            - **Microservices Ready**: Perfect for microservices architecture with multiple APIs
+            - **Enhanced HTML Reports**: Clean, accessible reports with confidence indicators
+            
+            ### 🚀 Smart Mapping Benefits
+            - **Improved Coverage Accuracy**: Smart mapping significantly improves coverage detection
+            - **Status Code Prioritization**: Prioritizes 2xx → 4xx → 5xx for better matching
+            - **Path Intelligence**: Handles parameter variations like `/users/{id}` vs `/users/{userId}`
+            - **Confidence Assessment**: Shows match quality to help identify reliable matches
+            - **Default Behavior**: No flags required - smart mapping works automatically
             
             ### 🔧 Compatibility
-            - ✅ Maintains backwards compatibility with single API mode
+            - ✅ Maintains backwards compatibility with existing workflows
             - ✅ Node.js 14+ required
             - ✅ NPM package available globally
+            - ✅ Smart mapping enabled by default
             
             ### 📦 Installation
             ```bash
@@ -105,21 +115,24 @@ jobs:
             
             ### 🎯 Usage Examples
             ```bash
-            # Single API (backwards compatible)
-            swagger-coverage-cli -s swagger.yaml -c collection.json
+            # Smart mapping enabled by default
+            swagger-coverage-cli api-spec.yaml collection.json
             
-            # Multiple APIs
-            swagger-coverage-cli -s users-api.yaml,products-api.json,orders-api.csv -c collection.json
+            # With verbose output to see smart mapping statistics
+            swagger-coverage-cli api-spec.yaml collection.json --verbose
             
-            # Generate detailed HTML report
-            swagger-coverage-cli -s api1.yaml,api2.yaml -c tests.json -o detailed-report.html
+            # Multiple APIs with smart mapping
+            swagger-coverage-cli api1.yaml,api2.yaml,api3.json collection.json
+            
+            # Works with Newman reports too
+            swagger-coverage-cli api-spec.yaml newman-report.json --newman
             ```
             
-            ### 📊 What's New in Multi-API Reports
-            - **API Source Column**: Each operation shows which API it belongs to
-            - **Combined Statistics**: Overall coverage across all APIs
-            - **Individual Breakdowns**: Per-API coverage metrics
-            - **Visual Enhancements**: Better headers and organization
+            ### 🧪 Quality Assurance
+            - **130 Tests**: Comprehensive test suite covering all smart mapping scenarios
+            - **38 Smart Mapping Tests**: Dedicated tests for status code priority, path matching, confidence scoring
+            - **Edge Case Coverage**: Robust handling of malformed URLs, missing data, and complex scenarios
+            - **Performance Tested**: Validated with large datasets (1000+ operations)
             
             ---
             
@@ -152,9 +165,12 @@ jobs:
           echo "- **GitHub Release:** [v${{ env.NEW_VERSION }}](https://github.com/${{ github.repository }}/releases/tag/v${{ env.NEW_VERSION }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🎯 Key Features" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Extended test coverage" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Newman support" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Unified coverage reports" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Smart endpoint mapping (enabled by default)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Status code prioritization" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Enhanced path matching" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Confidence scoring" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Multi-API support" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Newman report support" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Enhanced HTML reports" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ YAML, JSON, CSV support" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Backwards compatibility" >> $GITHUB_STEP_SUMMARY

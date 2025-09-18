@@ -760,7 +760,7 @@ swagger-coverage-cli api-spec.yaml collection.json \
 ```
 
 **HTML Report Features:**
-- ⭐ Primary match indicators
+- Primary match indicators
 - 📊 Confidence percentage badges
 - 📈 Smart mapping statistics
 - 🎯 Visual coverage improvements

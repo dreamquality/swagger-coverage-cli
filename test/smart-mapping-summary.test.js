@@ -138,7 +138,7 @@ describe('Smart Mapping Test Coverage Summary', () => {
     const startTime = Date.now();
     
     await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --smart-mapping`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman`,
       { cwd: path.resolve(__dirname, '..') }
     );
     
@@ -159,7 +159,7 @@ describe('Smart Mapping Test Coverage Summary', () => {
     );
 
     const { stdout: smartOutput } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --smart-mapping`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman`,
       { cwd: path.resolve(__dirname, '..') }
     );
 

@@ -17,7 +17,7 @@ describe('Smart Mapping CLI Integration', () => {
 
     // Test with smart mapping
     const { stdout: smartOutput } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --verbose --smart-mapping`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --verbose`,
       { cwd: path.resolve(__dirname, '..') }
     );
 
@@ -45,7 +45,7 @@ describe('Smart Mapping CLI Integration', () => {
 
   test('should show smart mapping statistics in verbose mode', async () => {
     const { stdout } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --verbose --smart-mapping`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --verbose`,
       { cwd: path.resolve(__dirname, '..') }
     );
 
@@ -191,7 +191,7 @@ describe('Smart Mapping CLI Integration', () => {
     const startTime = Date.now();
     
     const { stdout } = await execAsync(
-      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman --smart-mapping`,
+      `node cli.js "${sampleApiPath}" "${sampleNewmanPath}" --newman`,
       { cwd: path.resolve(__dirname, '..') }
     );
 

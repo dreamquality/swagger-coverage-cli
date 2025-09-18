@@ -81,7 +81,7 @@ describe('Newman Sample Demo Tests', () => {
     
     const coverageItems = matchOperationsDetailed(operations, requests, {
       verbose: true,
-      strictQuery: false
+      strictQuery: false,
       strictBody: false
     });
 
@@ -103,7 +103,7 @@ describe('Newman Sample Demo Tests', () => {
     const requests = extractRequestsFromNewman(sampleNewmanReport);
     const coverageItems = matchOperationsDetailed(operations, requests, {
       verbose: false,
-      strictQuery: false
+      strictQuery: false,
       strictBody: false
     });
 
@@ -154,7 +154,7 @@ describe('Newman Sample Demo Tests', () => {
     const requests = extractRequestsFromNewman(sampleNewmanReport);
     const coverageItems = matchOperationsDetailed(operations, requests, {
       verbose: false,
-      strictQuery: false
+      strictQuery: false,
       strictBody: false
     });
 

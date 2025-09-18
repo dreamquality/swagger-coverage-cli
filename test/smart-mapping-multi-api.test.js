@@ -119,7 +119,7 @@ describe('Smart Mapping Multi-API Scenarios', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -186,7 +186,7 @@ describe('Smart Mapping Multi-API Scenarios', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -272,7 +272,7 @@ describe('Smart Mapping Multi-API Scenarios', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -354,7 +354,7 @@ describe('Smart Mapping Multi-API Scenarios', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -417,7 +417,7 @@ describe('Smart Mapping Multi-API Scenarios', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -504,7 +504,7 @@ describe('Smart Mapping Multi-API Scenarios', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -606,7 +606,7 @@ describe('Smart Mapping Multi-API Scenarios', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });

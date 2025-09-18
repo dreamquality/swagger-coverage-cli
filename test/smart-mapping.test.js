@@ -95,7 +95,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -132,7 +132,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -180,7 +180,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -231,7 +231,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -307,7 +307,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -349,7 +349,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -438,7 +438,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: true,
 
       });
@@ -495,7 +495,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -536,7 +536,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -571,7 +571,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -646,7 +646,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });
@@ -703,7 +703,7 @@ describe('Smart Endpoint Mapping', () => {
 
       const coverageItems = matchOperationsDetailed(specOps, postmanReqs, {
         verbose: false,
-        strictQuery: false
+        strictQuery: false,
         strictBody: false
 
       });

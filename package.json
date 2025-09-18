@@ -56,7 +56,9 @@
     "@apidevtools/swagger-parser": "^10.1.1",
     "ajv": "^8.17.1",
     "commander": "^13.0.0",
+    "graphql": "^16.11.0",
     "js-yaml": "^4.1.0",
+    "protobufjs": "^7.5.4",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -1,47 +1,4 @@
-// report.js
 
-"use strict";
-
-/**
- * generateHtmlReport - enhanced version adding:
- *   - Coverage by Tags/Groups (an extra bar/donut chart)
- *   - PDF export button
- *   - Detailed Status Code checks in the sub-table
- *   - History/Trend Over Time displayed as a line chart next to the coverage pie
- *   - Nested expandable tables for JS test scripts with syntax highlighting
- *
- * coverageItems: [
- *   {
- *     method: "GET",
- *     path: "/v2/artist/elements",
- *     name: "listElements",
- *     tags: ["Artists", "Collections"],
- *     expectedStatusCodes: ["200","400"],
- *     statusCode: "200",
- *     unmatched: false,
- *     matchedRequests: [
- *       {
- *         name: "Get Elements (Postman)",
- *         rawUrl: "https://api.example.com/v2/artist/elements?foo=bar",
- *         method: "GET",
- *         testedStatusCodes: ["200","404"],
- *         testScripts: "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
- *       },
- *       ...
- *     ]
- *   },
- *   ...
- * ]
- */
-function generateHtmlReport({ coverage, coverageItems, meta }) {
-  const { timestamp, specName, postmanCollectionName, apiCount = 1, apiNames = [] } = meta;
-  const covered = coverage;
-  const notCovered = 100 - coverage;
-
-  // Convert coverageItems to JSON for client side
-  const coverageDataJson = JSON.stringify(coverageItems);
-
-  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -427,13 +384,13 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
     &#128262; <!-- flashlight icon -->
   </button>
   <div class="meta-info">
-    <p><strong>Timestamp:</strong> ${timestamp}</p>
-    <p><strong>API Spec${apiCount > 1 ? 's' : ''}:</strong> ${specName}</p>
-    ${apiCount > 1 ? `<p><strong>Individual APIs:</strong> ${apiNames.join(', ')}</p>` : ''}
-    <p><strong>Postman Collection:</strong> ${postmanCollectionName}</p>
-    <p><strong>Coverage:</strong> ${coverage.toFixed(2)}%</p>
-    <p>Covered: ${covered.toFixed(2)}%<br/>
-    Not Covered: ${notCovered.toFixed(2)}%</p>
+    <p><strong>Timestamp:</strong> 9/18/2025, 1:47:32 PM</p>
+    <p><strong>API Spec:</strong> user-service</p>
+    
+    <p><strong>Postman Collection:</strong> Multi-Protocol API Tests</p>
+    <p><strong>Coverage:</strong> 40.00%</p>
+    <p>Covered: 40.00%<br/>
+    Not Covered: 60.00%</p>
   </div>
 </header>
 
@@ -478,7 +435,7 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
   <table id="specTable">
     <thead>
       <tr>
-        ${apiCount > 1 ? '<th onclick="sortTableBy(\'apiName\')">API</th>' : ''}
+        
         <th onclick="sortTableBy('protocol')">Protocol</th>
         <th onclick="sortTableBy('method')">Method</th>
         <th onclick="sortTableBy('path')">Path</th>
@@ -505,8 +462,8 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
   hljs.highlightAll();
 
   // coverageData from server
-  let coverageData = ${coverageDataJson};
-  let apiCount = ${apiCount};
+  let coverageData = [{"method":"POST","path":"/user.v1.UserService/GetUser","name":"user.v1.UserService.GetUser","statusCode":"200","tags":["gRPC","user.v1.UserService"],"expectedStatusCodes":["200","400","500"],"apiName":"user-service","sourceFile":"user-service.proto","protocol":"grpc","unmatched":false,"matchedRequests":[{"name":"GetUser gRPC","rawUrl":"{{grpcUrl}}/user.v1.UserService/GetUser","method":"POST","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});","confidence":0.8999999999999999}],"isPrimaryMatch":true,"matchConfidence":0.8999999999999999},{"method":"POST","path":"/user.v1.UserService/CreateUser","name":"user.v1.UserService.CreateUser","statusCode":"200","tags":["gRPC","user.v1.UserService"],"expectedStatusCodes":["200","400","500"],"apiName":"user-service","sourceFile":"user-service.proto","protocol":"grpc","unmatched":false,"matchedRequests":[{"name":"CreateUser gRPC","rawUrl":"{{grpcUrl}}/user.v1.UserService/CreateUser","method":"POST","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});","confidence":0.8999999999999999}],"isPrimaryMatch":true,"matchConfidence":0.8999999999999999},{"method":"POST","path":"/user.v1.UserService/UpdateUser","name":"user.v1.UserService.UpdateUser","statusCode":"200","tags":["gRPC","user.v1.UserService"],"expectedStatusCodes":["200","400","500"],"apiName":"user-service","sourceFile":"user-service.proto","protocol":"grpc","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0},{"method":"POST","path":"/user.v1.UserService/DeleteUser","name":"user.v1.UserService.DeleteUser","statusCode":"200","tags":["gRPC","user.v1.UserService"],"expectedStatusCodes":["200","400","500"],"apiName":"user-service","sourceFile":"user-service.proto","protocol":"grpc","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0},{"method":"POST","path":"/user.v1.UserService/ListUsers","name":"user.v1.UserService.ListUsers","statusCode":"200","tags":["gRPC","user.v1.UserService"],"expectedStatusCodes":["200","400","500"],"apiName":"user-service","sourceFile":"user-service.proto","protocol":"grpc","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0}];
+  let apiCount = 1;
 
   // Merge duplicates for display only
   function unifyByMethodAndPath(items) {
@@ -548,9 +505,9 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
   window.onload = function() {
     coverageData = unifyByMethodAndPath(coverageData);
     // Save coverage in localStorage to build a trend
-    updateCoverageHistory(${coverage.toFixed(2)});
+    updateCoverageHistory(40.00);
 
-    renderCoverageChart(${coverage.toFixed(2)});
+    renderCoverageChart(40.00);
     renderTrendChart();
     renderTagChart();
     renderTable();
@@ -1005,12 +962,12 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
     const testScripts = pmReq.testScripts || '';
     const method = (pmReq.method || '').toUpperCase();
     
-    const hasResponseTimeTest = /pm\.response\.responseTime|pm\.expect\([^)]*responseTime[^)]*\)|pm\.response\.time/i.test(testScripts);
+    const hasResponseTimeTest = /pm.response.responseTime|pm.expect([^)]*responseTime[^)]*)|pm.response.time/i.test(testScripts);
     if (!hasResponseTimeTest) {
       recommendations.push('Missing response time validation');
     }
 
-    const hasSchemaValidation = /pm\.response\.json\(\).*schema|tv4\.validate|ajv\.validate|expect\(.*\)\.to\.match\.schema/i.test(testScripts);
+    const hasSchemaValidation = /pm.response.json().*schema|tv4.validate|ajv.validate|expect(.*).to.match.schema/i.test(testScripts);
     if (!hasSchemaValidation && !(method === 'DELETE' && pmReq.testedStatusCodes.includes('204'))) {
       recommendations.push('Missing JSON schema validation');
     }
@@ -1039,16 +996,16 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
     rows.forEach(row => {
       // Column indices adjust based on whether we have API column and protocol column
       let colIndex = 1;
-      if (${apiCount > 1}) colIndex++; // API column
+      if (false) colIndex++; // API column
       colIndex++; // Protocol column
       
-      const method = row.querySelector(\`td:nth-child(\${colIndex})\`).textContent;
-      const path = row.querySelector(\`td:nth-child(\${colIndex + 1})\`).textContent;
-      const name = row.querySelector(\`td:nth-child(\${colIndex + 2})\`).textContent;
+      const method = row.querySelector(`td:nth-child(${colIndex})`).textContent;
+      const path = row.querySelector(`td:nth-child(${colIndex + 1})`).textContent;
+      const name = row.querySelector(`td:nth-child(${colIndex + 2})`).textContent;
       
       // Include protocol in search
-      const protocolIndex = ${apiCount > 1} ? 2 : 1;
-      const protocol = row.querySelector(\`td:nth-child(\${protocolIndex})\`).textContent;
+      const protocolIndex = false ? 2 : 1;
+      const protocol = row.querySelector(`td:nth-child(${protocolIndex})`).textContent;
       
       const text = method + ' ' + path + ' ' + name.toLowerCase() + ' ' + protocol.toLowerCase();
       
@@ -1058,16 +1015,9 @@ function generateHtmlReport({ coverage, coverageItems, meta }) {
                           (filterMode === 'unmatched' && row.classList.contains('unmatched-spec'));
       
       row.style.display = matchesSearch && matchesFilter ? '' : 'none';
-            // Hide corresponding matched-requests-row if parent is hidden      const rowId = row.getAttribute('onclick')?.match(/toggleMatchedRow\('(.+?)'\)/)?.[1];      if (rowId) {        const matchedRow = document.getElementById(rowId);        if (matchedRow) {          matchedRow.style.display = 'none';        }      }
+            // Hide corresponding matched-requests-row if parent is hidden      const rowId = row.getAttribute('onclick')?.match(/toggleMatchedRow('(.+?)')/)?.[1];      if (rowId) {        const matchedRow = document.getElementById(rowId);        if (matchedRow) {          matchedRow.style.display = 'none';        }      }
     });
   }
 </script>
 </body>
 </html>
-`;
-
-  return html;
-}
-
-// Export the function
-module.exports = { generateHtmlReport };

@@ -1,58 +1,122 @@
-![Postman](https://img.shields.io/badge/Postman-FF6C37?logo=postman&logoColor=white) ![OpenAPI](https://img.shields.io/badge/OpenAPI-5392CE?logo=openapi&logoColor=white) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=white) ![Tests](https://github.com/dreamquality/swagger-coverage-cli/actions/workflows/test.yml/badge.svg) ![CSV](https://img.shields.io/badge/CSV-1DA598?logo=csv&logoColor=white) ![npm](https://img.shields.io/npm/v/swagger-coverage-cli?color=blue&label=npm&logo=npm)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?logo=postman&logoColor=white) ![OpenAPI](https://img.shields.io/badge/OpenAPI-5392CE?logo=openapi&logoColor=white) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=white) ![gRPC](https://img.shields.io/badge/gRPC-4caf50?logo=grpc&logoColor=white) ![GraphQL](https://img.shields.io/badge/GraphQL-e91e63?logo=graphql&logoColor=white) ![Tests](https://github.com/dreamquality/swagger-coverage-cli/actions/workflows/test.yml/badge.svg) ![CSV](https://img.shields.io/badge/CSV-1DA598?logo=csv&logoColor=white) ![npm](https://img.shields.io/npm/v/swagger-coverage-cli?color=blue&label=npm&logo=npm)
  
 
 # Swagger Coverage CLI
 
-> **A command-line utility to compare your OpenAPI/Swagger specification with a Postman collection and calculate **API test coverage**. Generates a human-readable HTML report. 
+> **A comprehensive command-line utility to analyze API test coverage across **multiple protocols**: OpenAPI/Swagger (REST), gRPC Protocol Buffers, and GraphQL schemas. Generates unified HTML reports with protocol-specific insights.**
 Check out the [Example!](https://dreamquality.github.io/swagger-coverage-cli)**
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Features](#features)
-3. [How It Works (Diagram)](#how-it-works-diagram)
-4. [Installation & Requirements](#installation--requirements)
-5. [Getting Started](#getting-started)
+2. [Multi-Protocol Support](#multi-protocol-support)
+3. [Features](#features)
+4. [How It Works (Diagram)](#how-it-works-diagram)
+5. [Installation & Requirements](#installation--requirements)
+6. [Getting Started](#getting-started)
 
    - [1. Prepare Your Files](#1-prepare-your-files)
    - [2. Run the CLI](#2-run-the-cli)
    - [3. Check the Coverage Report](#3-check-the-coverage-report)
 
-6. [Detailed Matching Logic](#detailed-matching-logic)
-7. [Smart Endpoint Mapping](#smart-endpoint-mapping)
-8. [Supported File Formats](#supported-file-formats)
+7. [Protocol-Specific Usage](#protocol-specific-usage)
+8. [Detailed Matching Logic](#detailed-matching-logic)
+9. [Smart Endpoint Mapping](#smart-endpoint-mapping)
+10. [Supported File Formats](#supported-file-formats)
 
 - [Using CSV for Documentation](#using-csv-for-documentation)
 
-9. [Contributing](#contributing)
-10. [License](#license)
+11. [Contributing](#contributing)
+12. [License](#license)
 
 ---
 
 ## Introduction
 
-**swagger-coverage-cli** is a tool that helps you **measure how much of your OpenAPI/Swagger-documented API is actually covered by your Postman tests**. It reads inputs from:
+**swagger-coverage-cli** is a comprehensive tool that helps you **measure API test coverage across multiple protocols**. It analyzes how much of your documented APIs are actually covered by your Postman tests. The tool supports:
 
-1. **Single or Multiple OpenAPI/Swagger** specifications (version 2 or 3) in either JSON or YAML format, or **CSV** files containing API documentation.
-2. A **Postman** collection (JSON) that contains requests and test scripts, **OR** a **Newman run report** (JSON) that contains actual execution results.
+### 🚀 Supported API Protocols
 
-The tool supports processing **multiple API specifications in a single run**, making it ideal for organizations managing multiple APIs or microservices. Using this information, the CLI **calculates a unified coverage percentage** and produces a **detailed HTML report** indicating which endpoints and status codes are validated across all APIs, and which are missing tests.
+- **📋 REST APIs**: OpenAPI/Swagger specifications (v2/v3) in JSON or YAML format
+- **⚡ gRPC APIs**: Protocol Buffer (`.proto`) files with service definitions
+- **🔀 GraphQL APIs**: GraphQL schema (`.graphql`, `.gql`) files with queries, mutations, and subscriptions
+- **📊 CSV APIs**: Custom CSV format for flexible API documentation
+
+### 🎯 Input Sources
+
+1. **API Specifications**: Single or multiple API files in supported formats
+2. **Test Collections**: Postman collections (JSON) with requests and test scripts
+3. **Execution Reports**: Newman run reports (JSON) with actual test execution results
+
+The tool supports processing **multiple API specifications in a single run**, making it ideal for organizations managing microservices with diverse protocols. It **calculates unified coverage percentages** and produces **detailed HTML reports** with protocol-specific insights.
+
+---
+
+## Multi-Protocol Support
+
+**swagger-coverage-cli** provides comprehensive support for modern API ecosystems with multiple protocols, enabling unified coverage analysis across your entire technology stack.
+
+### 🌐 Universal CLI Interface
+
+```bash
+# Single protocol APIs
+swagger-coverage-cli api.yaml collection.json           # OpenAPI/REST
+swagger-coverage-cli service.proto collection.json     # gRPC
+swagger-coverage-cli schema.graphql collection.json    # GraphQL
+swagger-coverage-cli api-docs.csv collection.json      # CSV
+
+# Mixed protocol APIs (Enterprise-ready)
+swagger-coverage-cli "api.yaml,service.proto,schema.graphql" collection.json
+
+# All existing options work across protocols
+swagger-coverage-cli "api.yaml,service.proto" collection.json --verbose --strict-body
+```
+
+### 🎯 Protocol-Specific Features
+
+#### 📋 REST/OpenAPI Support
+- **OpenAPI v2/v3**: Full specification support
+- **Smart Path Matching**: Handles parameter variations (`/users/{id}` vs `/users/{userId}`)
+- **Status Code Intelligence**: Prioritizes 2xx → 4xx → 5xx responses
+- **Request Body Validation**: JSON schema validation with strict mode
+
+#### ⚡ gRPC Support  
+- **Protocol Buffer Parsing**: Automatic `.proto` file analysis
+- **Service Discovery**: Extracts all services, methods, and message types
+- **Path Generation**: Maps to HTTP/2 paths (`/package.service/method`)
+- **Content-Type Validation**: Supports `application/grpc` and variants
+
+#### 🔀 GraphQL Support
+- **Schema Analysis**: Parses `.graphql` and `.gql` files
+- **Operation Extraction**: Identifies queries, mutations, and subscriptions
+- **Type System**: Full support for arguments, unions, and interfaces
+- **Endpoint Unification**: Maps all operations to `/graphql` endpoint
+
+### 📊 Unified Reporting
+
+- **Protocol Column**: Color-coded identification (🟢 gRPC, 🔴 GraphQL, 🔵 REST)
+- **Mixed Statistics**: Combined coverage metrics across all protocols
+- **Individual Breakdown**: Per-API and per-protocol insights
+- **Smart Search**: Protocol-aware filtering and search functionality
 
 ---
 
 ## Features
 
-- **Easy to Use**: Simple CLI interface with just two main arguments (the Swagger file and the Postman collection or Newman report).
-- **Multiple Input Types**: Supports both Postman collections and Newman run reports for maximum flexibility.
-- **Auto-Detection**: Automatically detects Newman report format even without explicit flags.
-- **Multiple API Support**: Process multiple Swagger/OpenAPI specifications in a single run for comprehensive API portfolio management.
-- **Unified Reporting**: Generate consolidated reports that show coverage across all APIs while maintaining individual API identification.
-- **Smart Endpoint Mapping**: Intelligent endpoint matching with status code prioritization and enhanced path matching for improved coverage accuracy.
-- **Strict Matching (Optional)**: Enforce strict checks for query parameters, request bodies, and more.
-- **HTML Reports**: Generates `coverage-report.html` that shows which endpoints are covered and which are not.
-- **Extensible**: Modular code structure (Node.js) allows customization of matching logic, query parameter checks, status code detection, etc.
-- **CSV Support**: Allows API documentation to be provided in a CSV format for flexibility and ease of use.
-- **Unit Tested**: Includes Jest tests for the core functions that match endpoints to Postman requests.
+- **🌐 Multi-Protocol Support**: Native support for REST (OpenAPI/Swagger), gRPC (Protocol Buffers), and GraphQL schemas
+- **🔄 Mixed API Analysis**: Process multiple API specifications with different protocols in a single run
+- **🎯 Protocol-Aware Matching**: Intelligent request matching tailored to each API protocol's characteristics
+- **📊 Unified Reporting**: Generate consolidated HTML reports with protocol-specific insights and color coding
+- **⚡ Easy to Use**: Simple CLI interface works across all supported protocols with consistent syntax
+- **🔍 Multiple Input Types**: Supports Postman collections and Newman run reports for maximum flexibility
+- **🤖 Auto-Detection**: Automatically detects API file types and Newman report formats
+- **🏗️ Enterprise Ready**: Perfect for microservices architectures using diverse API protocols
+- **🎨 Smart Endpoint Mapping**: Intelligent endpoint matching with status code prioritization and enhanced path matching
+- **🔒 Strict Matching (Optional)**: Enforce strict checks for query parameters, request bodies, and more
+- **📈 Enhanced HTML Reports**: Generates interactive `coverage-report.html` with protocol identification
+- **🧩 Extensible**: Modular code structure allows customization of matching logic and protocol support
+- **📋 CSV Support**: Flexible API documentation format for teams preferring spreadsheet-based docs
+- **✅ Unit Tested**: Comprehensive Jest test suite covering all protocols and edge cases
 
 ---
 
@@ -233,6 +297,140 @@ Unmatched operations:
 
 ![main](https://github.com/dreamquality/swagger-coverage-cli/blob/main/assets/main.png?raw=true)
 ![table](https://github.com/dreamquality/swagger-coverage-cli/blob/main/assets/table.png?raw=true)
+
+---
+
+## Protocol-Specific Usage
+
+### 🌐 OpenAPI/REST APIs
+
+Use standard OpenAPI/Swagger files in YAML or JSON format:
+
+```bash
+# Single OpenAPI specification
+swagger-coverage-cli api-spec.yaml collection.json
+
+# Multiple REST APIs
+swagger-coverage-cli "api-v1.yaml,api-v2.yaml,legacy.json" collection.json
+
+# With strict validation
+swagger-coverage-cli openapi.yaml collection.json --strict-query --strict-body
+```
+
+**Supported OpenAPI features:**
+- Path parameters (`/users/{id}`, `/users/{userId}`)
+- Query parameters with schema validation
+- Request body validation (JSON, form-data, etc.)
+- Multiple response status codes per operation
+- OpenAPI v2 and v3 specifications
+
+### ⚡ gRPC APIs
+
+Analyze Protocol Buffer service definitions:
+
+```bash
+# Single gRPC service
+swagger-coverage-cli user-service.proto collection.json
+
+# Multiple gRPC services
+swagger-coverage-cli "user.proto,order.proto,payment.proto" collection.json
+
+# Mixed with OpenAPI
+swagger-coverage-cli "rest-api.yaml,grpc-service.proto" collection.json
+```
+
+**gRPC-specific features:**
+- Service and method extraction from `.proto` files
+- HTTP/2 path mapping (`/package.service/method`)
+- Content-type validation (`application/grpc`, `application/grpc+proto`)
+- Nested package support (`company.api.v1.UserService`)
+
+**Example Postman request for gRPC:**
+```json
+{
+  "method": "POST",
+  "url": "{{grpcUrl}}/user.v1.UserService/GetUser",
+  "header": [
+    { "key": "Content-Type", "value": "application/grpc" }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\"user_id\": \"123\"}"
+  }
+}
+```
+
+### 🔀 GraphQL APIs
+
+Analyze GraphQL schema definitions:
+
+```bash
+# Single GraphQL API
+swagger-coverage-cli schema.graphql collection.json
+
+# Multiple GraphQL schemas  
+swagger-coverage-cli "user-schema.gql,product-schema.graphql" collection.json
+
+# Full stack coverage
+swagger-coverage-cli "api.yaml,service.proto,schema.graphql" collection.json
+```
+
+**GraphQL-specific features:**
+- Query, mutation, and subscription extraction
+- Argument analysis with type information
+- Union and interface type support
+- Nested type relationship mapping
+
+**Example Postman request for GraphQL:**
+```json
+{
+  "method": "POST", 
+  "url": "{{apiUrl}}/graphql",
+  "header": [
+    { "key": "Content-Type", "value": "application/json" }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\"query\": \"query GetUser($id: ID!) { user(id: $id) { id name email } }\", \"variables\": {\"id\": \"123\"}}"
+  }
+}
+```
+
+### 📊 CSV Documentation
+
+Use CSV format for flexible API documentation:
+
+```bash
+# CSV-based API documentation
+swagger-coverage-cli api-docs.csv collection.json
+
+# Mixed with other formats
+swagger-coverage-cli "api.yaml,docs.csv,service.proto" collection.json
+```
+
+**CSV format columns:**
+- `method`: HTTP method (GET, POST, etc.)
+- `path`: API endpoint path
+- `statusCode`: Expected response status code
+- `description`: Operation description
+- `tags`: Comma-separated tags for grouping
+
+### 🏗️ Enterprise Scenarios
+
+**Microservices Architecture:**
+```bash
+# Complete microservices stack
+swagger-coverage-cli "gateway.yaml,user-service.proto,analytics.graphql,docs.csv" tests.json
+
+# Per-team analysis
+swagger-coverage-cli "team-a-api.yaml,team-b-service.proto" team-tests.json
+```
+
+**CI/CD Integration:**
+```bash
+# Production coverage check
+swagger-coverage-cli "$(find apis -name '*.yaml' -o -name '*.proto' -o -name '*.graphql' | tr '\n' ',')" collection.json --output coverage-$(date +%Y%m%d).html
+```
 
 ---
 

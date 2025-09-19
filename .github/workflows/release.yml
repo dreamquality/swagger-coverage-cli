@@ -85,54 +85,73 @@ jobs:
           body: |
             ## 🚀 swagger-coverage-cli v${{ env.NEW_VERSION }}
             
-            ### ✨ Features
+            ### ✨ New Features
+            - **🌐 Multi-Protocol Support**: Native support for REST (OpenAPI/Swagger), gRPC (Protocol Buffers), and GraphQL schemas
+            - **🔄 Mixed API Analysis**: Process multiple API specifications with different protocols in a single run  
+            - **🎯 Protocol-Aware Matching**: Intelligent request matching tailored to each API protocol's characteristics
+            - **📊 Unified Reporting**: Generate consolidated HTML reports with protocol-specific insights and color coding
+            - **⚡ Universal CLI**: Single interface works across all supported protocols with consistent syntax
+            
+            ### 🎨 Enhanced Features
             - **Smart Endpoint Mapping**: Intelligent endpoint matching with status code prioritization enabled by default
             - **Enhanced Path Matching**: Improved handling of path parameters with different naming conventions
             - **Confidence Scoring**: Match quality assessment with 0.0-1.0 confidence scores
             - **Status Code Intelligence**: Prioritizes successful (2xx) codes over error codes for better coverage
-            - **Multi-API Support**: Process multiple Swagger/OpenAPI specifications in a single run
-            - **Unified Reporting**: Generate combined coverage reports with individual API metrics
-            - **Format Support**: YAML, JSON, and CSV file formats supported
-            - **Enhanced HTML Reports**: Clean, accessible reports with confidence indicators
+            - **Multi-API Support**: Process multiple API specifications in a single run
+            - **Enhanced HTML Reports**: Interactive reports with protocol identification and color coding
             
-            ### 🚀 Smart Mapping Benefits
-            - **Improved Coverage Accuracy**: Smart mapping significantly improves coverage detection
-            - **Status Code Prioritization**: Prioritizes 2xx → 4xx → 5xx for better matching
-            - **Path Intelligence**: Handles parameter variations like `/users/{id}` vs `/users/{userId}`
-            - **Confidence Assessment**: Shows match quality to help identify reliable matches
-            - **Default Behavior**: No flags required - smart mapping works automatically
+            ### 🎯 Protocol Support
+            
+            #### 📋 REST/OpenAPI
+            - OpenAPI v2/v3 specifications (YAML/JSON)
+            - Smart path matching with parameter variations
+            - Request body and query parameter validation
+            - Multiple status codes per operation
+            
+            #### ⚡ gRPC
+            - Protocol Buffer (.proto) file parsing
+            - Service and method extraction
+            - HTTP/2 path mapping (/package.service/method)
+            - Content-type validation (application/grpc)
+            
+            #### 🔀 GraphQL  
+            - GraphQL schema (.graphql/.gql) parsing
+            - Query, mutation, and subscription extraction
+            - Type system with arguments and unions
+            - Unified /graphql endpoint handling
+            
+            ### 🚀 Usage Examples
+            ```bash
+            # Single protocol APIs
+            swagger-coverage-cli api.yaml collection.json           # OpenAPI/REST
+            swagger-coverage-cli service.proto collection.json     # gRPC
+            swagger-coverage-cli schema.graphql collection.json    # GraphQL
+            
+            # Mixed protocol APIs (Enterprise-ready)
+            swagger-coverage-cli "api.yaml,service.proto,schema.graphql" collection.json
+            
+            # All existing options work across protocols
+            swagger-coverage-cli "api.yaml,service.proto" collection.json --verbose --strict-body
+            ```
             
             ### 🔧 Compatibility
             - ✅ Maintains backwards compatibility with existing workflows
-            - ✅ Node.js 14+ required
+            - ✅ Node.js 14+ required  
             - ✅ NPM package available globally
             - ✅ Smart mapping enabled by default
+            - ✅ All existing CLI options work with new protocols
             
             ### 📦 Installation
             ```bash
             npm install -g swagger-coverage-cli@${{ env.NEW_VERSION }}
             ```
             
-            ### 🎯 Usage Examples
-            ```bash
-            # Smart mapping enabled by default
-            swagger-coverage-cli api-spec.yaml collection.json
-            
-            # With verbose output to see smart mapping statistics
-            swagger-coverage-cli api-spec.yaml collection.json --verbose
-            
-            # Multiple APIs with smart mapping
-            swagger-coverage-cli api1.yaml,api2.yaml,api3.json collection.json
-            
-            # Works with Newman reports too
-            swagger-coverage-cli api-spec.yaml newman-report.json --newman
-            ```
-            
             ### 🧪 Quality Assurance
-            - **130 Tests**: Comprehensive test suite covering all smart mapping scenarios
-            - **38 Smart Mapping Tests**: Dedicated tests for status code priority, path matching, confidence scoring
+            - **147 Tests**: Comprehensive test suite covering all protocols and scenarios
+            - **19 Test Suites**: Dedicated test coverage for each protocol and integration scenarios
             - **Edge Case Coverage**: Robust handling of malformed URLs, missing data, and complex scenarios
-            - **Performance Tested**: Validated with large datasets (1000+ operations)
+            - **Performance Tested**: Validated with large datasets and mixed protocol specifications
+            - **Protocol Isolation**: Each protocol's parsing and matching logic is independently tested
             
             ---
             
@@ -165,12 +184,15 @@ jobs:
           echo "- **GitHub Release:** [v${{ env.NEW_VERSION }}](https://github.com/${{ github.repository }}/releases/tag/v${{ env.NEW_VERSION }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🎯 Key Features" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Multi-protocol support (REST, gRPC, GraphQL)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Protocol-aware matching logic" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Mixed API analysis in single run" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Smart endpoint mapping (enabled by default)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Status code prioritization" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Enhanced path matching" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Confidence scoring" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Multi-API support" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Newman report support" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Enhanced HTML reports" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ YAML, JSON, CSV support" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Enhanced HTML reports with protocol identification" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ YAML, JSON, CSV, .proto, .graphql support" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Backwards compatibility" >> $GITHUB_STEP_SUMMARY

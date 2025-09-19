@@ -1,0 +1,91 @@
+type Query {
+  # Get user by ID
+  user(id: ID!): User
+  
+  # List all users
+  users(limit: Int, offset: Int): [User!]!
+  
+  # Search users by name
+  searchUsers(query: String!): [User!]!
+  
+  # Get user profile
+  userProfile(userId: ID!): UserProfile
+}
+
+type Mutation {
+  # Create a new user
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  
+  # Update existing user
+  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
+  
+  # Delete user
+  deleteUser(id: ID!): DeleteUserPayload!
+  
+  # Update user profile
+  updateUserProfile(userId: ID!, input: UserProfileInput!): UserProfilePayload!
+}
+
+type Subscription {
+  # Subscribe to user updates
+  userUpdated(userId: ID!): User!
+  
+  # Subscribe to new user registrations
+  userRegistered: User!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  createdAt: String!
+  updatedAt: String!
+  profile: UserProfile
+}
+
+type UserProfile {
+  id: ID!
+  userId: ID!
+  bio: String
+  avatar: String
+  website: String
+  location: String
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  profile: UserProfileInput
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+}
+
+input UserProfileInput {
+  bio: String
+  avatar: String
+  website: String
+  location: String
+}
+
+type CreateUserPayload {
+  user: User!
+  errors: [String!]
+}
+
+type UpdateUserPayload {
+  user: User!
+  errors: [String!]
+}
+
+type DeleteUserPayload {
+  success: Boolean!
+  errors: [String!]
+}
+
+type UserProfilePayload {
+  profile: UserProfile!
+  errors: [String!]
+}

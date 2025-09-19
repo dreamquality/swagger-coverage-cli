@@ -1,0 +1,180 @@
+{
+  "info": {
+    "name": "Multi-Protocol API Tests",
+    "description": "Tests for REST, gRPC, and GraphQL APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "REST API Tests",
+      "item": [
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/123",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "123"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "gRPC API Tests",
+      "item": [
+        {
+          "name": "GetUser gRPC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/grpc"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"user_id\": \"123\"}"
+            },
+            "url": {
+              "raw": "{{grpcUrl}}/user.v1.UserService/GetUser",
+              "host": ["{{grpcUrl}}"],
+              "path": ["user.v1.UserService", "GetUser"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CreateUser gRPC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/grpc"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"John Doe\", \"email\": \"john@example.com\"}"
+            },
+            "url": {
+              "raw": "{{grpcUrl}}/user.v1.UserService/CreateUser",
+              "host": ["{{grpcUrl}}"],
+              "path": ["user.v1.UserService", "CreateUser"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GraphQL API Tests",
+      "item": [
+        {
+          "name": "Get User Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"query GetUser($id: ID!) { user(id: $id) { id name email createdAt } }\", \"variables\": {\"id\": \"123\"}}"
+            },
+            "url": {
+              "raw": "{{graphqlUrl}}/graphql",
+              "host": ["{{graphqlUrl}}"],
+              "path": ["graphql"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create User Mutation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"mutation CreateUser($input: CreateUserInput!) { createUser(input: $input) { user { id name email } errors } }\", \"variables\": {\"input\": {\"name\": \"Jane Doe\", \"email\": \"jane@example.com\"}}}"
+            },
+            "url": {
+              "raw": "{{graphqlUrl}}/graphql",
+              "host": ["{{graphqlUrl}}"],
+              "path": ["graphql"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

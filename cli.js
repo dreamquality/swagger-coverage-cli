@@ -11,52 +11,81 @@ const { loadNewmanReport, extractRequestsFromNewman } = require("./lib/newman");
 const { matchOperationsDetailed } = require("./lib/match");
 const { generateHtmlReport } = require("./lib/report");
 const { loadExcelSpec } = require("./lib/excel");
+const { loadAndParseProto, extractOperationsFromProto, isProtoFile } = require("./lib/grpc");
+const { loadAndParseGraphQL, extractOperationsFromGraphQL, isGraphQLFile } = require("./lib/graphql");
 
 const program = new Command();
 
 program
   .name("swagger-coverage-cli")
   .description(
-    "CLI tool for comparing OpenAPI/Swagger specifications with a Postman collection or Newman run report, producing an enhanced HTML report"
+    "CLI tool for comparing API specifications (OpenAPI/Swagger, gRPC Protocol Buffers, GraphQL) with Postman collections or Newman run reports, producing an enhanced HTML report"
   )
-  .version("4.0.0")
-  .argument("<swaggerFiles>", "Path(s) to the Swagger/OpenAPI file(s) (JSON or YAML). Use comma-separated values for multiple files.")
+  .version("7.0.0")
+  .argument("<apiFiles>", "Path(s) to API specification file(s): OpenAPI/Swagger (JSON/YAML), gRPC (.proto), GraphQL (.graphql/.gql), or CSV. Use comma-separated values for multiple files.")
   .argument("<postmanCollectionOrNewmanReport>", "Path to the Postman collection (JSON) or Newman run report (JSON).")
   .option("-v, --verbose", "Show verbose debug info")
   .option("--strict-query", "Enable strict validation of query parameters")
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
   .option("--newman", "Treat input file as Newman run report instead of Postman collection")
-  .action(async (swaggerFiles, postmanFile, options) => {
+  .action(async (apiFiles, postmanFile, options) => {
     try {
       const { verbose, strictQuery, strictBody, output, newman } = options;
 
-      // Parse comma-separated swagger files
-      const files = swaggerFiles.includes(',') ? 
-        swaggerFiles.split(',').map(f => f.trim()) : 
-        [swaggerFiles];
+      // Parse comma-separated API files
+      const files = apiFiles.includes(',') ? 
+        apiFiles.split(',').map(f => f.trim()) : 
+        [apiFiles];
       
       let allSpecOperations = [];
       let allSpecNames = [];
       const excelExtensions = [".xlsx", ".xls", ".csv"];
 
-      // Process each swagger file
-      for (const swaggerFile of files) {
-        const ext = path.extname(swaggerFile).toLowerCase();
+      // Process each API specification file
+      for (const apiFile of files) {
+        const ext = path.extname(apiFile).toLowerCase();
         let specOperations;
         let specName;
+        let protocol;
 
         if (excelExtensions.includes(ext)) {
-          // Parse Excel
-          specOperations = loadExcelSpec(swaggerFile);
-          specName = path.basename(swaggerFile);
-        } else {
-          // Original Swagger flow
-          const spec = await loadAndParseSpec(swaggerFile);
-          specName = spec.info.title;
+          // Parse Excel/CSV
+          specOperations = loadExcelSpec(apiFile);
+          specName = path.basename(apiFile);
+          protocol = 'rest';
+        } else if (isProtoFile(apiFile)) {
+          // Parse gRPC Protocol Buffer
+          const protoRoot = await loadAndParseProto(apiFile);
+          specName = path.basename(apiFile, '.proto');
+          specOperations = extractOperationsFromProto(protoRoot, verbose);
+          protocol = 'grpc';
           if (verbose) {
             console.log(
-              "Specification loaded successfully:",
+              "gRPC specification loaded successfully:",
+              specName
+            );
+          }
+        } else if (isGraphQLFile(apiFile)) {
+          // Parse GraphQL schema
+          const graphqlData = loadAndParseGraphQL(apiFile);
+          specName = path.basename(apiFile);
+          specOperations = extractOperationsFromGraphQL(graphqlData, verbose);
+          protocol = 'graphql';
+          if (verbose) {
+            console.log(
+              "GraphQL specification loaded successfully:",
+              specName
+            );
+          }
+        } else {
+          // Original OpenAPI/Swagger flow
+          const spec = await loadAndParseSpec(apiFile);
+          specName = spec.info.title;
+          protocol = 'rest';
+          if (verbose) {
+            console.log(
+              "OpenAPI specification loaded successfully:",
               specName,
               spec.info.version
             );
@@ -64,11 +93,12 @@ program
           specOperations = extractOperationsFromSpec(spec, verbose);
         }
 
-        // Add API name to each operation for identification
+        // Add API name and protocol to each operation for identification
         const operationsWithSource = specOperations.map(op => ({
           ...op,
           apiName: specName,
-          sourceFile: path.basename(swaggerFile)
+          sourceFile: path.basename(apiFile),
+          protocol: protocol
         }));
 
         allSpecOperations = allSpecOperations.concat(operationsWithSource);

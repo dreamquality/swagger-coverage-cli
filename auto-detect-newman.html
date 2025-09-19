@@ -384,7 +384,7 @@
     &#128262; <!-- flashlight icon -->
   </button>
   <div class="meta-info">
-    <p><strong>Timestamp:</strong> 9/18/2025, 12:15:43 PM</p>
+    <p><strong>Timestamp:</strong> 9/18/2025, 2:32:58 PM</p>
     <p><strong>API Spec:</strong> Test API</p>
     
     <p><strong>Postman Collection:</strong> Test Newman Collection</p>
@@ -436,6 +436,7 @@
     <thead>
       <tr>
         
+        <th onclick="sortTableBy('protocol')">Protocol</th>
         <th onclick="sortTableBy('method')">Method</th>
         <th onclick="sortTableBy('path')">Path</th>
         <th onclick="sortTableBy('name')">Name</th>
@@ -461,7 +462,7 @@
   hljs.highlightAll();
 
   // coverageData from server
-  let coverageData = [{"method":"GET","path":"/users","name":"getUsers","statusCode":"200","tags":[],"expectedStatusCodes":["200"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":false,"matchedRequests":[{"name":"Get Users","rawUrl":"https://api.example.com/users","method":"GET","testedStatusCodes":["200"],"testScripts":"// Status code is 200","confidence":0.8999999999999999}],"isPrimaryMatch":true,"matchConfidence":0.8999999999999999},{"method":"POST","path":"/users","name":"createUser","statusCode":"201","tags":[],"expectedStatusCodes":["201","400"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":false,"matchedRequests":[{"name":"Create User","rawUrl":"https://api.example.com/users","method":"POST","testedStatusCodes":["201"],"testScripts":"// Status code is 201","confidence":0.8999999999999999}],"isPrimaryMatch":true,"matchConfidence":0.8999999999999999},{"method":"POST","path":"/users","name":"createUser","statusCode":"400","tags":[],"expectedStatusCodes":["201","400"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"200","tags":[],"expectedStatusCodes":["200","404"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"404","tags":[],"expectedStatusCodes":["200","404"],"apiName":"Test API","sourceFile":"test-api.yaml","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0}];
+  let coverageData = [{"method":"GET","path":"/users","name":"getUsers","statusCode":"200","tags":[],"expectedStatusCodes":["200"],"apiName":"Test API","sourceFile":"test-api.yaml","protocol":"rest","unmatched":false,"matchedRequests":[{"name":"Get Users","rawUrl":"https://api.example.com/users","method":"GET","testedStatusCodes":["200"],"testScripts":"// Status code is 200","confidence":0.8999999999999999}],"isPrimaryMatch":true,"matchConfidence":0.8999999999999999},{"method":"POST","path":"/users","name":"createUser","statusCode":"201","tags":[],"expectedStatusCodes":["201","400"],"apiName":"Test API","sourceFile":"test-api.yaml","protocol":"rest","unmatched":false,"matchedRequests":[{"name":"Create User","rawUrl":"https://api.example.com/users","method":"POST","testedStatusCodes":["201"],"testScripts":"// Status code is 201","confidence":0.8999999999999999}],"isPrimaryMatch":true,"matchConfidence":0.8999999999999999},{"method":"POST","path":"/users","name":"createUser","statusCode":"400","tags":[],"expectedStatusCodes":["201","400"],"apiName":"Test API","sourceFile":"test-api.yaml","protocol":"rest","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"200","tags":[],"expectedStatusCodes":["200","404"],"apiName":"Test API","sourceFile":"test-api.yaml","protocol":"rest","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0},{"method":"GET","path":"/users/{id}","name":"getUserById","statusCode":"404","tags":[],"expectedStatusCodes":["200","404"],"apiName":"Test API","sourceFile":"test-api.yaml","protocol":"rest","unmatched":true,"matchedRequests":[],"isPrimaryMatch":false,"matchConfidence":0}];
   let apiCount = 1;
 
   // Merge duplicates for display only
@@ -741,6 +742,23 @@
         tr.appendChild(tdApi);
       }
 
+      // Add protocol column
+      const tdProtocol = document.createElement('td');
+      tdProtocol.className = "spec-cell protocol-cell";
+      const protocol = item.protocol || 'rest';
+      tdProtocol.textContent = protocol.toUpperCase();
+      // Add styling based on protocol
+      if (protocol === 'grpc') {
+        tdProtocol.style.color = '#4caf50';
+        tdProtocol.style.fontWeight = 'bold';
+      } else if (protocol === 'graphql') {
+        tdProtocol.style.color = '#e91e63';
+        tdProtocol.style.fontWeight = 'bold';
+      } else {
+        tdProtocol.style.color = '#2196f3';
+      }
+      tr.appendChild(tdProtocol);
+
       const tdMethod = document.createElement('td');
       tdMethod.className = "spec-cell";
       tdMethod.textContent = (item.method || "").toUpperCase();
@@ -784,7 +802,7 @@
         subTr.className = "matched-requests-row";
 
         const subTd = document.createElement('td');
-        subTd.colSpan = apiCount > 1 ? 5 : 4;
+        subTd.colSpan = apiCount > 1 ? 6 : 5;
 
         const pmTable = document.createElement('table');
         pmTable.className = "postman-table";
@@ -976,10 +994,20 @@
     const rows = document.querySelectorAll('#specTable tbody tr.spec-row');
     
     rows.forEach(row => {
-      const method = row.querySelector('td:nth-child(1)').textContent;
-      const path = row.querySelector('td:nth-child(2)').textContent;
-      const name = row.querySelector('td:nth-child(3)').textContent;
-      const text = method + ' ' + path + ' ' + name.toLowerCase();
+      // Column indices adjust based on whether we have API column and protocol column
+      let colIndex = 1;
+      if (false) colIndex++; // API column
+      colIndex++; // Protocol column
+      
+      const method = row.querySelector(`td:nth-child(${colIndex})`).textContent;
+      const path = row.querySelector(`td:nth-child(${colIndex + 1})`).textContent;
+      const name = row.querySelector(`td:nth-child(${colIndex + 2})`).textContent;
+      
+      // Include protocol in search
+      const protocolIndex = false ? 2 : 1;
+      const protocol = row.querySelector(`td:nth-child(${protocolIndex})`).textContent;
+      
+      const text = method + ' ' + path + ' ' + name.toLowerCase() + ' ' + protocol.toLowerCase();
       
       const matchesSearch = searchText === '' || text.includes(searchText);
       const matchesFilter = (filterMode === 'all') || 

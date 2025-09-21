@@ -49,7 +49,7 @@ describe('Report Module', () => {
     const html = generateGraphHtmlReport(input);
     expect(typeof html).toBe('string');
     expect(html).toContain('<html');
-    expect(html).toContain('API Coverage Graph Report');
+    expect(html).toContain('API Coverage Tree Report');
     expect(html).toContain('d3js.org');
     expect(html).toContain('Coverage Status');
     expect(html).toContain('75.00%');

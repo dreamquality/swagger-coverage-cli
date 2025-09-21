@@ -50,7 +50,7 @@ describe('Report Module', () => {
     expect(typeof html).toBe('string');
     expect(html).toContain('<html');
     expect(html).toContain('API Coverage Tree Report');
-    expect(html).toContain('d3js.org');
+    expect(html).toContain('renderTree');
     expect(html).toContain('Coverage Status');
     expect(html).toContain('75.00%');
   });

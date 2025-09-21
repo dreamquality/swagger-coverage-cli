@@ -42,10 +42,10 @@ describe('Graph Report Integration', () => {
       // Check content of graph report
       const graphContent = fs.readFileSync(graphOutputFile, 'utf8');
       expect(graphContent).toContain('API Coverage Tree Report');
-      expect(graphContent).toContain('d3js.org');
       expect(graphContent).toContain('Coverage Status');
       expect(graphContent).toContain('tree-container');
       expect(graphContent).toContain('expandAll');
+      expect(graphContent).toContain('renderTree');
       
       done();
     });

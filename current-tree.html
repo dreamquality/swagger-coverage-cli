@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Coverage Tree Report</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #fafafa;
+      color: #212121;
+    }
+    
+    header {
+      padding: 16px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 1.8rem;
+      color: #6200ee;
+    }
+    
+    .meta-info {
+      font-size: 0.9em;
+      opacity: 0.8;
+      margin-bottom: 16px;
+    }
+    
+    .controls {
+      text-align: center;
+      padding: 16px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .tree-controls {
+      margin-bottom: 10px;
+    }
+    
+    .tree-btn {
+      margin: 0 5px;
+      padding: 8px 16px;
+      background-color: #6200ee;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .tree-btn:hover {
+      background-color: #7c4dff;
+    }
+    
+    .legend {
+      display: inline-block;
+      margin: 0 20px;
+    }
+    
+    .legend-item {
+      display: inline-block;
+      margin: 0 10px;
+      font-size: 0.9em;
+    }
+    
+    .legend-color {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    
+    .covered { background-color: #4caf50; }
+    .partial { background-color: #ff9800; }
+    .not-covered { background-color: #f44336; }
+    .group { background-color: #2196f3; }
+    .root { background-color: #9c27b0; }
+    
+    #tree-container {
+      width: 100%;
+      height: calc(100vh - 250px);
+      min-height: 600px;
+      background-color: #ffffff;
+      position: relative;
+      overflow: auto;
+    }
+    
+    .node-circle {
+      cursor: pointer;
+      stroke: #333;
+      stroke-width: 2px;
+    }
+    
+    .node-circle.covered {
+      fill: #4caf50;
+    }
+    
+    .node-circle.partial {
+      fill: #ff9800;
+    }
+    
+    .node-circle.not-covered {
+      fill: #f44336;
+    }
+    
+    .node-circle.group {
+      fill: #2196f3;
+    }
+    
+    .node-circle.root {
+      fill: #9c27b0;
+    }
+    
+    .link {
+      fill: none;
+      stroke: #666;
+      stroke-width: 2px;
+    }
+    
+    .node-text {
+      font-size: 12px;
+      font-family: 'Roboto', sans-serif;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .node-text.endpoint {
+      font-size: 11px;
+      font-weight: normal;
+    }
+    
+    .node-text.group {
+      font-weight: bold;
+    }
+    
+    .node-text.root {
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .tooltip {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .expand-symbol {
+      font-size: 12px;
+      font-weight: bold;
+      fill: #333;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 16px;
+      background-color: #f5f5f5;
+      border-top: 1px solid #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>API Coverage Tree Report</h1>
+    <div class="meta-info">
+      <p><strong>Timestamp:</strong> 9/21/2025, 7:43:34 PM</p>
+      <p><strong>API Spec:</strong> Sample API for Newman Demo</p>
+      
+      <p><strong>Postman Collection:</strong> Comprehensive Test Collection</p>
+      <p><strong>Overall Coverage:</strong> 16.67%</p>
+    </div>
+  </header>
+  
+  <div class="controls">
+    <div class="tree-controls">
+      <button class="tree-btn" onclick="expandAll()">Expand All</button>
+      <button class="tree-btn" onclick="collapseAll()">Collapse All</button>
+      <button class="tree-btn" onclick="centerTree()">Center View</button>
+    </div>
+    <div class="legend">
+      <h3 style="margin: 0 0 10px 0;">Coverage Status</h3>
+      <div class="legend-item">
+        <span class="legend-color covered"></span>
+        <span>Covered (3)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color partial"></span>
+        <span>Partial (0)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color not-covered"></span>
+        <span>Not Covered (15)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color group"></span>
+        <span>Groups</span>
+      </div>
+    </div>
+  </div>
+  
+  <div id="tree-container">
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+  
+  <footer>
+    <p>Generated by swagger-coverage-cli - Expandable tree visualization shows API endpoints hierarchically with coverage status color coding</p>
+  </footer>
+
+  <script>
+    // Tree data
+    const treeData = {"name":"API Coverage","children":[{"name":"Sample API for Newman Demo","children":[{"name":"Users","children":[{"name":"/users","children":[{"name":"GET /users","method":"GET","path":"/users","status":"covered","type":"endpoint","coverage":100,"matchedRequests":[{"name":"Get All Users","rawUrl":"{{baseUrl}}/users?limit=10&offset=0","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('Response is an array', function () {\n    pm.response.to.be.json;\n    pm.expect(pm.response.json()).to.be.an('array');\n});","confidence":0.8999999999999999}],"operationName":"getUsers"},{"name":"GET /users","method":"GET","path":"/users","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"getUsers"},{"name":"GET /users","method":"GET","path":"/users","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"getUsers"},{"name":"POST /users","method":"POST","path":"/users","status":"covered","type":"endpoint","coverage":100,"matchedRequests":[{"name":"Create User","rawUrl":"{{baseUrl}}/users","method":"POST","testedStatusCodes":["201"],"testScripts":"pm.test('Status code is 201', function () {\n    pm.response.to.have.status(201);\n});\n\npm.test('User created successfully', function () {\n    const responseJson = pm.response.json();\n    pm.expect(responseJson).to.have.property('id');\n    pm.expect(responseJson.email).to.eql('john.doe@example.com');\n});","confidence":0.8999999999999999}],"operationName":"createUser"},{"name":"POST /users","method":"POST","path":"/users","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"createUser"},{"name":"POST /users","method":"POST","path":"/users","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"createUser"}],"type":"path","status":"group"},{"name":"/users/{id}","children":[{"name":"GET /users/{id}","method":"GET","path":"/users/{id}","status":"covered","type":"endpoint","coverage":100,"matchedRequests":[{"name":"Get User by ID","rawUrl":"{{baseUrl}}/users/{{userId}}","method":"GET","testedStatusCodes":["200"],"testScripts":"pm.test('Status code is 200', function () {\n    pm.response.to.have.status(200);\n});\n\npm.test('User has required properties', function () {\n    const user = pm.response.json();\n    pm.expect(user).to.have.property('id');\n    pm.expect(user).to.have.property('email');\n    pm.expect(user).to.have.property('firstName');\n    pm.expect(user).to.have.property('lastName');\n});","confidence":0.8999999999999999}],"operationName":"getUserById"},{"name":"GET /users/{id}","method":"GET","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"getUserById"},{"name":"GET /users/{id}","method":"GET","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"getUserById"},{"name":"PATCH /users/{id}","method":"PATCH","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"updateUser"},{"name":"PATCH /users/{id}","method":"PATCH","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"updateUser"},{"name":"PATCH /users/{id}","method":"PATCH","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"updateUser"},{"name":"DELETE /users/{id}","method":"DELETE","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"deleteUser"},{"name":"DELETE /users/{id}","method":"DELETE","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"deleteUser"},{"name":"DELETE /users/{id}","method":"DELETE","path":"/users/{id}","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"deleteUser"}],"type":"path","status":"group"}],"type":"tag","status":"group"},{"name":"Admin","children":[{"name":"/admin/users","children":[{"name":"GET /admin/users","method":"GET","path":"/admin/users","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"getAdminUsers"},{"name":"GET /admin/users","method":"GET","path":"/admin/users","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"getAdminUsers"},{"name":"GET /admin/users","method":"GET","path":"/admin/users","status":"not-covered","type":"endpoint","coverage":0,"matchedRequests":[],"operationName":"getAdminUsers"}],"type":"path","status":"group"}],"type":"tag","status":"group"}],"type":"api","status":"group"}],"type":"root","status":"root"};
+    
+    // Set up dimensions and margins
+    const margin = { top: 20, right: 120, bottom: 20, left: 120 };
+    const container = d3.select('#tree-container');
+    const containerNode = container.node();
+    const width = containerNode.clientWidth - margin.left - margin.right;
+    const height = containerNode.clientHeight - margin.top - margin.bottom;
+    
+    // Create SVG
+    const svg = container.append('svg')
+      .attr('width', containerNode.clientWidth)
+      .attr('height', containerNode.clientHeight);
+    
+    const g = svg.append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+    
+    // Set up zoom behavior
+    const zoom = d3.zoom()
+      .scaleExtent([0.1, 3])
+      .on('zoom', (event) => {
+        g.attr('transform', `translate(${event.transform.x + margin.left},${event.transform.y + margin.top}) scale(${event.transform.k})`);
+      });
+    
+    svg.call(zoom);
+    
+    // Create tree layout
+    const tree = d3.tree().size([height, width]);
+    
+    let i = 0;
+    const duration = 500;
+    
+    // Initialize the tree
+    const root = d3.hierarchy(treeData, d => d.children);
+    root.x0 = height / 2;
+    root.y0 = 0;
+    
+    // Collapse all children initially except root
+    function collapse(d) {
+      if (d.children) {
+        d._children = d.children;
+        d._children.forEach(collapse);
+        d.children = null;
+      }
+    }
+    
+    root.children.forEach(collapse);
+    
+    update(root);
+    
+    function update(source) {
+      // Compute the new tree layout
+      const treeData = tree(root);
+      const nodes = treeData.descendants();
+      const links = treeData.descendants().slice(1);
+      
+      // Normalize for fixed-depth
+      nodes.forEach(d => { d.y = d.depth * 180; });
+      
+      // Update the nodes
+      const node = g.selectAll('g.node')
+        .data(nodes, d => d.id || (d.id = ++i));
+      
+      // Enter any new nodes at the parent's previous position
+      const nodeEnter = node.enter().append('g')
+        .attr('class', 'node')
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', click);
+      
+      // Add circles for the nodes
+      nodeEnter.append('circle')
+        .attr('class', d => `node-circle ${d.data.status}`)
+        .attr('r', 1e-6)
+        .on('mouseover', showTooltip)
+        .on('mouseout', hideTooltip);
+      
+      // Add expand/collapse symbol
+      nodeEnter.append('text')
+        .attr('class', 'expand-symbol')
+        .attr('dy', '0.35em')
+        .text(d => d._children ? '+' : (d.children ? '−' : ''));
+      
+      // Add labels for the nodes
+      nodeEnter.append('text')
+        .attr('class', d => `node-text ${d.data.type}`)
+        .attr('dy', '0.35em')
+        .attr('x', d => d.children || d._children ? -13 : 13)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .text(d => d.data.name);
+      
+      // Transition nodes to their new position
+      const nodeUpdate = nodeEnter.merge(node);
+      
+      nodeUpdate.transition()
+        .duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`);
+      
+      nodeUpdate.select('circle.node-circle')
+        .attr('r', d => {
+          if (d.data.type === 'root') return 12;
+          if (d.data.type === 'endpoint') return 8;
+          return 10;
+        })
+        .attr('class', d => `node-circle ${d.data.status}`);
+      
+      nodeUpdate.select('text.expand-symbol')
+        .text(d => d._children ? '+' : (d.children ? '−' : ''));
+      
+      // Remove any exiting nodes
+      const nodeExit = node.exit().transition()
+        .duration(duration)
+        .attr('transform', d => `translate(${source.y},${source.x})`)
+        .remove();
+      
+      nodeExit.select('circle')
+        .attr('r', 1e-6);
+      
+      nodeExit.select('text')
+        .style('fill-opacity', 1e-6);
+      
+      // Update the links
+      const link = g.selectAll('path.link')
+        .data(links, d => d.id);
+      
+      // Enter any new links at the parent's previous position
+      const linkEnter = link.enter().insert('path', 'g')
+        .attr('class', 'link')
+        .attr('d', d => {
+          const o = { x: source.x0, y: source.y0 };
+          return diagonal(o, o);
+        });
+      
+      // Transition links to their new position
+      const linkUpdate = linkEnter.merge(link);
+      
+      linkUpdate.transition()
+        .duration(duration)
+        .attr('d', d => diagonal(d, d.parent));
+      
+      // Remove any exiting links
+      const linkExit = link.exit().transition()
+        .duration(duration)
+        .attr('d', d => {
+          const o = { x: source.x, y: source.y };
+          return diagonal(o, o);
+        })
+        .remove();
+      
+      // Store the old positions for transition
+      nodes.forEach(d => {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
+    }
+    
+    // Creates a curved (diagonal) path from parent to the child nodes
+    function diagonal(s, d) {
+      const path = `M ${s.y} ${s.x}
+        C ${(s.y + d.y) / 2} ${s.x},
+          ${(s.y + d.y) / 2} ${d.x},
+          ${d.y} ${d.x}`;
+      return path;
+    }
+    
+    // Toggle children on click
+    function click(event, d) {
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
+      } else {
+        d.children = d._children;
+        d._children = null;
+      }
+      update(d);
+    }
+    
+    // Tooltip functions
+    function showTooltip(event, d) {
+      const tooltip = d3.select('#tooltip');
+      let content = `<strong>${d.data.name}</strong><br/>`;
+      
+      if (d.data.type === 'endpoint') {
+        content += `Method: ${d.data.method}<br/>`;
+        content += `Path: ${d.data.path}<br/>`;
+        content += `Status: ${d.data.status.replace('-', ' ')}<br/>`;
+        if (d.data.operationName) {
+          content += `Operation: ${d.data.operationName}<br/>`;
+        }
+        if (d.data.matchedRequests && d.data.matchedRequests.length > 0) {
+          content += `Tests: ${d.data.matchedRequests.length}<br/>`;
+        }
+      } else {
+        content += `Type: ${d.data.type}<br/>`;
+        const childCount = (d.children || d._children || []).length;
+        if (childCount > 0) {
+          content += `Children: ${childCount}<br/>`;
+        }
+      }
+      
+      tooltip
+        .style('opacity', 1)
+        .style('left', (event.pageX + 10) + 'px')
+        .style('top', (event.pageY + 10) + 'px')
+        .html(content);
+    }
+    
+    function hideTooltip() {
+      d3.select('#tooltip').style('opacity', 0);
+    }
+    
+    // Control functions
+    function expandAll() {
+      function expand(d) {
+        if (d._children) {
+          d.children = d._children;
+          d._children = null;
+        }
+        if (d.children) {
+          d.children.forEach(expand);
+        }
+      }
+      expand(root);
+      update(root);
+    }
+    
+    function collapseAll() {
+      function collapse(d) {
+        if (d.children) {
+          d._children = d.children;
+          d._children.forEach(collapse);
+          d.children = null;
+        }
+      }
+      root.children.forEach(collapse);
+      update(root);
+    }
+    
+    function centerTree() {
+      svg.transition().call(zoom.transform, d3.zoomIdentity);
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      const newWidth = containerNode.clientWidth;
+      const newHeight = containerNode.clientHeight;
+      svg.attr('width', newWidth).attr('height', newHeight);
+      tree.size([newHeight - margin.top - margin.bottom, newWidth - margin.left - margin.right]);
+      update(root);
+    });
+  </script>
+</body>
+</html>

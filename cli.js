@@ -9,7 +9,7 @@ const { loadAndParseSpec, extractOperationsFromSpec } = require("./lib/swagger")
 const { loadPostmanCollection, extractRequestsFromPostman } = require("./lib/postman");
 const { loadNewmanReport, extractRequestsFromNewman } = require("./lib/newman");
 const { matchOperationsDetailed } = require("./lib/match");
-const { generateHtmlReport } = require("./lib/report");
+const { generateHtmlReport, generateGraphHtmlReport } = require("./lib/report");
 const { loadExcelSpec } = require("./lib/excel");
 const { loadAndParseProto, extractOperationsFromProto, isProtoFile } = require("./lib/grpc");
 const { loadAndParseGraphQL, extractOperationsFromGraphQL, isGraphQLFile } = require("./lib/graphql");
@@ -29,9 +29,10 @@ program
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
   .option("--newman", "Treat input file as Newman run report instead of Postman collection")
+  .option("--graph-report", "Generate a separate graph schema HTML report showing API test coverage with nodes and edges")
   .action(async (apiFiles, postmanFile, options) => {
     try {
-      const { verbose, strictQuery, strictBody, output, newman } = options;
+      const { verbose, strictQuery, strictBody, output, newman, graphReport } = options;
 
       // Parse comma-separated API files
       const files = apiFiles.includes(',') ? 
@@ -217,6 +218,26 @@ program
 
       fs.writeFileSync(path.resolve(output), html, "utf8");
       console.log(`\nHTML report saved to: ${output}`);
+
+      // 8. Generate graph report if requested
+      if (graphReport) {
+        const graphOutputFile = output.replace(/\.html?$/i, '-graph.html');
+        const graphHtml = generateGraphHtmlReport({
+          coverage,
+          coverageItems,
+          meta: {
+            timestamp: new Date().toLocaleString(),
+            specName: combinedSpecName,
+            postmanCollectionName: collectionName,
+            undocumentedRequests,
+            apiCount: files.length,
+            apiNames: allSpecNames
+          },
+        });
+
+        fs.writeFileSync(path.resolve(graphOutputFile), graphHtml, "utf8");
+        console.log(`Graph report saved to: ${graphOutputFile}`);
+      }
     } catch (err) {
       console.error("Error:", err.message);
       process.exit(1);

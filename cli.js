@@ -27,11 +27,12 @@ program
   .option("-v, --verbose", "Show verbose debug info")
   .option("--strict-query", "Enable strict validation of query parameters")
   .option("--strict-body", "Enable strict validation of requestBody (JSON)")
+  .option("--disable-spec-validation", "Disable OpenAPI/Swagger spec validation (useful for specs with validation or reference issues)")
   .option("--output <file>", "HTML report output file", "coverage-report.html")
   .option("--newman", "Treat input file as Newman run report instead of Postman collection")
   .action(async (apiFiles, postmanFile, options) => {
     try {
-      const { verbose, strictQuery, strictBody, output, newman } = options;
+      const { verbose, strictQuery, strictBody, output, newman, disableSpecValidation } = options;
 
       // Parse comma-separated API files
       const files = apiFiles.includes(',') ? 
@@ -80,7 +81,7 @@ program
           }
         } else {
           // Original OpenAPI/Swagger flow
-          const spec = await loadAndParseSpec(apiFile);
+          const spec = await loadAndParseSpec(apiFile, { disableValidation: disableSpecValidation });
           specName = spec.info.title;
           protocol = 'rest';
           if (verbose) {

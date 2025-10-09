@@ -86,19 +86,25 @@ jobs:
             ## 🚀 swagger-coverage-cli v${{ env.NEW_VERSION }}
             
             ### ✨ New Features
-            - **🌐 Multi-Protocol Support**: Native support for REST (OpenAPI/Swagger), gRPC (Protocol Buffers), and GraphQL schemas
-            - **🔄 Mixed API Analysis**: Process multiple API specifications with different protocols in a single run  
-            - **🎯 Protocol-Aware Matching**: Intelligent request matching tailored to each API protocol's characteristics
-            - **📊 Unified Reporting**: Generate consolidated HTML reports with protocol-specific insights and color coding
-            - **⚡ Universal CLI**: Single interface works across all supported protocols with consistent syntax
+            - **🛡️ Flexible Spec Validation**: New `--disable-spec-validation` flag to process specs with validation or reference issues
             
             ### 🎨 Enhanced Features
-            - **Smart Endpoint Mapping**: Intelligent endpoint matching with status code prioritization enabled by default
-            - **Enhanced Path Matching**: Improved handling of path parameters with different naming conventions
-            - **Confidence Scoring**: Match quality assessment with 0.0-1.0 confidence scores
-            - **Status Code Intelligence**: Prioritizes successful (2xx) codes over error codes for better coverage
-            - **Multi-API Support**: Process multiple API specifications in a single run
-            - **Enhanced HTML Reports**: Interactive reports with protocol identification and color coding
+            - **Legacy API Support**: Work with incomplete or invalid specs using `--disable-spec-validation`
+            
+            ### 🛡️ Spec Validation Control
+            
+            The new `--disable-spec-validation` flag allows you to analyze coverage even when specs have validation issues:
+            
+            ```bash
+            # Skip validation for specs with broken references or validation errors
+            swagger-coverage-cli api.yaml collection.json --disable-spec-validation
+            ```
+            
+            **Use cases:**
+            - Legacy APIs with incomplete specifications
+            - Specs with external references that can't be resolved
+            - APIs in development where specs aren't fully complete
+            - Quick coverage checks without fixing all spec issues first
             
             ### 🎯 Protocol Support
             
@@ -147,11 +153,12 @@ jobs:
             ```
             
             ### 🧪 Quality Assurance
-            - **147 Tests**: Comprehensive test suite covering all protocols and scenarios
-            - **19 Test Suites**: Dedicated test coverage for each protocol and integration scenarios
-            - **Edge Case Coverage**: Robust handling of malformed URLs, missing data, and complex scenarios
+            - **183 Tests**: Comprehensive test suite covering all protocols and scenarios including spec validation control
+            - **22 Test Suites**: Dedicated test coverage for each protocol, integration scenarios, and validation features
+            - **Edge Case Coverage**: Robust handling of malformed URLs, missing data, broken references, and complex scenarios
             - **Performance Tested**: Validated with large datasets and mixed protocol specifications
             - **Protocol Isolation**: Each protocol's parsing and matching logic is independently tested
+            - **Validation Testing**: 16 new tests for `--disable-spec-validation` flag covering unit and CLI integration
             
             ---
             
@@ -184,15 +191,5 @@ jobs:
           echo "- **GitHub Release:** [v${{ env.NEW_VERSION }}](https://github.com/${{ github.repository }}/releases/tag/v${{ env.NEW_VERSION }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🎯 Key Features" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Multi-protocol support (REST, gRPC, GraphQL)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Protocol-aware matching logic" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Mixed API analysis in single run" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Smart endpoint mapping (enabled by default)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Status code prioritization" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Enhanced path matching" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Confidence scoring" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Multi-API support" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Newman report support" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Enhanced HTML reports with protocol identification" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ YAML, JSON, CSV, .proto, .graphql support" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Flexible spec validation with --disable-spec-validation flag" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Backwards compatibility" >> $GITHUB_STEP_SUMMARY

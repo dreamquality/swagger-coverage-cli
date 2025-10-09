@@ -794,6 +794,16 @@ Folder-level tests support the same patterns as request-level tests:
 - `pm.expect(pm.response.code).to.be.oneOf([200, 201, 204])`
 - And other common Postman test assertions
 
+#### Edge Cases Handled
+
+The folder-level test feature handles various edge cases:
+- **Empty folders**: Folders with no requests are handled gracefully
+- **Deep nesting**: Supports unlimited levels of nested folders with test inheritance at each level
+- **Missing events**: Requests or folders without event properties work correctly
+- **Mixed patterns**: Multiple test patterns in the same folder or request are combined
+- **Null/undefined events**: Folders with null or undefined event properties are handled safely
+- **Non-test events**: Only "test" events are processed; other events (like "prerequest") are ignored
+
 ### Using CSV for Documentation
 
 In addition to traditional OpenAPI/Swagger specifications, **swagger-coverage-cli** supports API documentation provided in a **CSV** format. This allows for a more flexible and easily editable documentation process, especially for teams that prefer spreadsheet-based documentation.

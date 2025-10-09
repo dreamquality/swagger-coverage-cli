@@ -331,4 +331,357 @@ describe('Postman Module', () => {
     expect(requests[1].testScripts).toContain('pm.expect(pm.response.code).to.eql(200)');
     expect(requests[1].testScripts).toContain('Has authorization');
   });
+
+  // Edge case tests
+  test('extractRequestsFromPostman should handle empty folders gracefully', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Empty Folder',
+          item: [],
+          event: [
+            {
+              listen: 'test',
+              script: {
+                exec: ['pm.response.to.have.status(200);']
+              }
+            }
+          ]
+        },
+        {
+          name: 'Regular Request',
+          request: {
+            method: 'GET',
+            url: 'https://api.example.com/test'
+          }
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(1);
+    expect(requests[0].name).toBe('Regular Request');
+  });
+
+  test('extractRequestsFromPostman should handle folders containing only subfolders', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Parent Folder',
+          item: [
+            {
+              name: 'Child Folder',
+              item: [
+                {
+                  name: 'Deep Request',
+                  request: {
+                    method: 'GET',
+                    url: 'https://api.example.com/deep'
+                  }
+                }
+              ],
+              event: [
+                {
+                  listen: 'test',
+                  script: {
+                    exec: ['pm.response.to.have.status(200);']
+                  }
+                }
+              ]
+            }
+          ],
+          event: [
+            {
+              listen: 'test',
+              script: {
+                exec: ['pm.expect(pm.response.code).to.eql(201);']
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(1);
+    expect(requests[0].testedStatusCodes).toContain('200');
+    expect(requests[0].testedStatusCodes).toContain('201');
+  });
+
+  test('extractRequestsFromPostman should handle requests with no event property', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Folder with tests',
+          item: [
+            {
+              name: 'Request without events',
+              request: {
+                method: 'GET',
+                url: 'https://api.example.com/test'
+              }
+              // No event property at all
+            }
+          ],
+          event: [
+            {
+              listen: 'test',
+              script: {
+                exec: ['pm.response.to.have.status(200);']
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(1);
+    expect(requests[0].testedStatusCodes).toContain('200');
+  });
+
+  test('extractRequestsFromPostman should handle empty event arrays', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Folder',
+          item: [
+            {
+              name: 'Request',
+              request: {
+                method: 'GET',
+                url: 'https://api.example.com/test'
+              },
+              event: [] // Empty array
+            }
+          ],
+          event: [] // Empty array
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(1);
+    expect(requests[0].testedStatusCodes).toEqual([]);
+    expect(requests[0].testScripts).toBe('');
+  });
+
+  test('extractRequestsFromPostman should ignore non-test events', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Folder',
+          item: [
+            {
+              name: 'Request',
+              request: {
+                method: 'GET',
+                url: 'https://api.example.com/test'
+              }
+            }
+          ],
+          event: [
+            {
+              listen: 'prerequest',
+              script: {
+                exec: ['console.log("This should be ignored");']
+              }
+            },
+            {
+              listen: 'test',
+              script: {
+                exec: ['pm.response.to.have.status(200);']
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(1);
+    expect(requests[0].testedStatusCodes).toContain('200');
+    expect(requests[0].testScripts).not.toContain('This should be ignored');
+  });
+
+  test('extractRequestsFromPostman should handle deeply nested folders (3+ levels)', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Level 1',
+          item: [
+            {
+              name: 'Level 2',
+              item: [
+                {
+                  name: 'Level 3',
+                  item: [
+                    {
+                      name: 'Deep Request',
+                      request: {
+                        method: 'GET',
+                        url: 'https://api.example.com/deep'
+                      }
+                    }
+                  ],
+                  event: [
+                    {
+                      listen: 'test',
+                      script: {
+                        exec: ['pm.response.to.have.status(200);']
+                      }
+                    }
+                  ]
+                }
+              ],
+              event: [
+                {
+                  listen: 'test',
+                  script: {
+                    exec: ['pm.expect(pm.response.code).to.eql(201);']
+                  }
+                }
+              ]
+            }
+          ],
+          event: [
+            {
+              listen: 'test',
+              script: {
+                exec: ['pm.expect(pm.response.code).to.be.oneOf([202, 204]);']
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(1);
+    // Should inherit all status codes from all levels
+    expect(requests[0].testedStatusCodes).toContain('200');
+    expect(requests[0].testedStatusCodes).toContain('201');
+    expect(requests[0].testedStatusCodes).toContain('202');
+    expect(requests[0].testedStatusCodes).toContain('204');
+  });
+
+  test('extractRequestsFromPostman should handle various status code assertion patterns', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Test Pattern 1',
+          request: {
+            method: 'GET',
+            url: 'https://api.example.com/test1'
+          },
+          event: [
+            {
+              listen: 'test',
+              script: {
+                exec: ['pm.response.code === 200']
+              }
+            }
+          ]
+        },
+        {
+          name: 'Test Pattern 2',
+          request: {
+            method: 'GET',
+            url: 'https://api.example.com/test2'
+          },
+          event: [
+            {
+              listen: 'test',
+              script: {
+                exec: ['pm.response.status === 201']
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(2);
+    expect(requests[0].testedStatusCodes).toContain('200');
+    expect(requests[1].testedStatusCodes).toContain('201');
+  });
+
+  test('extractRequestsFromPostman should handle mixed test patterns in same folder', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Mixed Patterns Folder',
+          item: [
+            {
+              name: 'Request',
+              request: {
+                method: 'GET',
+                url: 'https://api.example.com/test'
+              }
+            }
+          ],
+          event: [
+            {
+              listen: 'test',
+              script: {
+                exec: [
+                  'pm.response.to.have.status(200);',
+                  'pm.expect(pm.response.code).to.eql(201);',
+                  'pm.expect(pm.response.code).to.be.oneOf([202, 203]);',
+                  'pm.response.code === 204'
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(1);
+    expect(requests[0].testedStatusCodes).toContain('200');
+    expect(requests[0].testedStatusCodes).toContain('201');
+    expect(requests[0].testedStatusCodes).toContain('202');
+    expect(requests[0].testedStatusCodes).toContain('203');
+    expect(requests[0].testedStatusCodes).toContain('204');
+  });
+
+  test('extractRequestsFromPostman should handle folders with undefined or null event properties', () => {
+    const collection = {
+      item: [
+        {
+          name: 'Folder with undefined event',
+          item: [
+            {
+              name: 'Request',
+              request: {
+                method: 'GET',
+                url: 'https://api.example.com/test'
+              }
+            }
+          ],
+          event: undefined
+        },
+        {
+          name: 'Folder with null event',
+          item: [
+            {
+              name: 'Request 2',
+              request: {
+                method: 'POST',
+                url: 'https://api.example.com/test2'
+              }
+            }
+          ],
+          event: null
+        }
+      ]
+    };
+
+    const requests = extractRequestsFromPostman(collection);
+    expect(requests.length).toBe(2);
+    expect(requests[0].testedStatusCodes).toEqual([]);
+    expect(requests[1].testedStatusCodes).toEqual([]);
+  });
 });

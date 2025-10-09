@@ -113,6 +113,7 @@ swagger-coverage-cli "api.yaml,service.proto" collection.json --verbose --strict
 - **🏗️ Enterprise Ready**: Perfect for microservices architectures using diverse API protocols
 - **🎨 Smart Endpoint Mapping**: Intelligent endpoint matching with status code prioritization and enhanced path matching
 - **🔒 Strict Matching (Optional)**: Enforce strict checks for query parameters, request bodies, and more
+- **🛡️ Flexible Validation**: Skip spec validation with `--disable-spec-validation` for legacy APIs or specs with reference issues
 - **📈 Enhanced HTML Reports**: Generates interactive `coverage-report.html` with protocol identification
 - **🧩 Extensible**: Modular code structure allows customization of matching logic and protocol support
 - **📋 CSV Support**: Flexible API documentation format for teams preferring spreadsheet-based docs
@@ -260,6 +261,7 @@ npm swagger-coverage-cli "users-api.yaml,products-api.yaml" newman-report.json -
 - `--newman`: Treat input file as Newman run report instead of Postman collection.
 - `--strict-query`: Enforce strict checks on query parameters (e.g., required params, `enum`, `pattern`, etc.).
 - `--strict-body`: Verify that `application/json` request bodies in the spec match raw JSON bodies in Postman requests.
+- `--disable-spec-validation`: Disable OpenAPI/Swagger spec validation (useful for specs with validation or reference issues).
 - `--output <file>`: Customize the name of the HTML report file (default is `coverage-report.html`).
 
 ### Run via NPM Script
@@ -536,6 +538,60 @@ Beyond basic percentage, consider these quality indicators:
 - **Critical Endpoints**: Ensure 100% coverage for authentication, payment, and data modification endpoints
 - **Error Testing**: Include at least 50% of documented error cases
 - **Use Newman Reports**: For more accurate coverage analysis in CI/CD pipelines
+
+---
+
+## Handling Specs with Validation Issues
+
+Sometimes API specifications may have validation errors or broken references, especially in legacy systems or during development. The `--disable-spec-validation` flag allows you to analyze coverage even when specs have issues.
+
+### When to Use
+
+Use `--disable-spec-validation` when:
+- Working with legacy APIs that have incomplete specifications
+- Specs contain broken `$ref` references that can't be resolved
+- External references aren't available in your CI/CD environment
+- You need quick coverage analysis without fixing all spec issues first
+- API specifications are still in development
+
+### Usage
+
+```bash
+# Standard usage (validation enabled - will fail on invalid specs)
+swagger-coverage-cli api.yaml collection.json
+
+# Disable validation for specs with issues
+swagger-coverage-cli api.yaml collection.json --disable-spec-validation
+
+# Works with all other flags
+swagger-coverage-cli api.yaml collection.json --disable-spec-validation --verbose --strict-body
+```
+
+### Example
+
+**Without the flag (validation enabled):**
+```bash
+$ swagger-coverage-cli broken-spec.yaml collection.json
+Error: Token "NonExistentSchema" does not exist.
+```
+
+**With the flag (validation disabled):**
+```bash
+$ swagger-coverage-cli broken-spec.yaml collection.json --disable-spec-validation
+=== Swagger Coverage Report ===
+Total operations in spec(s): 12
+Matched operations in Postman/Newman: 9
+Coverage: 75.00%
+
+HTML report saved to: coverage-report.html
+```
+
+### Important Notes
+
+- When validation is disabled, the tool parses the spec without validating references
+- Coverage can still be calculated for the operations that are defined
+- The tool won't catch structural issues in the spec
+- Default behavior (with validation enabled) ensures spec quality
 
 ---
 

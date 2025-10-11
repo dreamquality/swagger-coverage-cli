@@ -217,6 +217,7 @@ You will need:
 
 > **Note**: 
 > - If using a Postman collection, make sure it includes actual test scripts that assert or check specific status codes (e.g., `pm.response.to.have.status(200)`).
+> - **Folder-level tests** are fully supported: tests defined at the folder level in your Postman collection will be automatically applied to all requests within that folder, ensuring comprehensive coverage calculation.
 > - If using a Newman report, the tool will extract actual response codes and test results from the execution data.
 
 ### 2. Run the CLI
@@ -712,6 +713,7 @@ The tool supports two types of input for test data:
 - **Pros**: 
   - Contains all test logic and assertions
   - Can extract expected status codes from test scripts
+  - **Supports folder-level tests**: Tests defined at the folder level are automatically applied to all requests within that folder and its subfolders
 - **Cons**: 
   - No actual execution data
   - Relies on parsing test scripts to understand expected outcomes
@@ -727,6 +729,80 @@ The tool supports two types of input for test data:
   - Requires an additional step to generate the report
 
 **Recommendation**: Use Newman reports when possible for more accurate coverage analysis, especially in CI/CD pipelines where collections are actually executed.
+
+### Folder-Level Tests in Postman Collections
+
+**swagger-coverage-cli** fully supports **folder-level tests** in Postman collections. Tests defined at the folder level are automatically applied to all requests within that folder and its subfolders, making it easy to apply common test assertions across multiple endpoints.
+
+#### How It Works
+
+When you define tests at the folder level in your Postman collection:
+1. The tests are extracted from the folder's event scripts
+2. Status codes and assertions are identified from the test scripts
+3. These tests are automatically combined with any request-level tests
+4. All requests within the folder (and nested folders) inherit these tests
+
+#### Example
+
+Consider this Postman collection structure:
+
+```json
+{
+  "name": "Users API",
+  "item": [
+    {
+      "name": "Get User",
+      "request": { "method": "GET", "url": "/users/1" }
+    },
+    {
+      "name": "Create User", 
+      "request": { "method": "POST", "url": "/users" }
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "pm.test('Status code is 200 or 201', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+          "});"
+        ]
+      }
+    }
+  ]
+}
+```
+
+In this example:
+- The folder "Users API" has a test that checks for status codes 200 or 201
+- **Both** "Get User" and "Create User" requests will inherit these status codes
+- This means both endpoints will be counted as testing status codes 200 and 201
+
+#### Benefits
+
+- **Reduced duplication**: Define common tests once at the folder level
+- **Better coverage**: Ensures all requests within a folder test common scenarios
+- **Easier maintenance**: Update folder-level tests to affect all child requests
+- **Nested support**: Folder-level tests are inherited through multiple levels of nesting
+
+#### Supported Test Patterns
+
+Folder-level tests support the same patterns as request-level tests:
+- `pm.response.to.have.status(200)`
+- `pm.expect(pm.response.code).to.eql(201)`
+- `pm.expect(pm.response.code).to.be.oneOf([200, 201, 204])`
+- And other common Postman test assertions
+
+#### Edge Cases Handled
+
+The folder-level test feature handles various edge cases:
+- **Empty folders**: Folders with no requests are handled gracefully
+- **Deep nesting**: Supports unlimited levels of nested folders with test inheritance at each level
+- **Missing events**: Requests or folders without event properties work correctly
+- **Mixed patterns**: Multiple test patterns in the same folder or request are combined
+- **Null/undefined events**: Folders with null or undefined event properties are handled safely
+- **Non-test events**: Only "test" events are processed; other events (like "prerequest") are ignored
 
 ### Using CSV for Documentation
 

@@ -86,10 +86,41 @@ jobs:
             ## 🚀 swagger-coverage-cli v${{ env.NEW_VERSION }}
             
             ### ✨ New Features
+            - **📁 Folder-Level Tests Support**: Tests defined at folder level in Postman collections are now automatically applied to all requests within that folder
+            - **🔄 Recursive Test Inheritance**: Support for nested folder hierarchies with test inheritance across multiple levels
             - **🛡️ Flexible Spec Validation**: New `--disable-spec-validation` flag to process specs with validation or reference issues
             
             ### 🎨 Enhanced Features
+            - **Better Coverage Calculation**: More accurate coverage metrics by including folder-level test assertions
+            - **Reduced Test Duplication**: Define common tests once at folder level instead of repeating on every request
+            - **Enterprise Collection Support**: Improved support for well-organized Postman collections with folder structures
             - **Legacy API Support**: Work with incomplete or invalid specs using `--disable-spec-validation`
+            
+            ### 📁 Folder-Level Tests
+            
+            Postman collections organized into folders can now have tests defined at the folder level that automatically apply to all child requests:
+            
+            ```json
+            {
+              "name": "User API",
+              "item": [
+                { "name": "Get Users", "request": {...} },
+                { "name": "Create User", "request": {...} }
+              ],
+              "event": [{
+                "listen": "test",
+                "script": {
+                  "exec": ["pm.expect(pm.response.code).to.be.oneOf([200, 201]);"]
+                }
+              }]
+            }
+            ```
+            
+            **Benefits:**
+            - ✅ Both requests inherit status codes 200 and 201 from folder
+            - ✅ Folder tests combine with request-level tests
+            - ✅ Supports unlimited nesting depth
+            - ✅ Backward compatible with existing collections
             
             ### 🛡️ Spec Validation Control
             
@@ -153,12 +184,13 @@ jobs:
             ```
             
             ### 🧪 Quality Assurance
-            - **183 Tests**: Comprehensive test suite covering all protocols and scenarios including spec validation control
-            - **22 Test Suites**: Dedicated test coverage for each protocol, integration scenarios, and validation features
-            - **Edge Case Coverage**: Robust handling of malformed URLs, missing data, broken references, and complex scenarios
-            - **Performance Tested**: Validated with large datasets and mixed protocol specifications
+            - **198 Tests**: Comprehensive test suite covering all protocols, scenarios, folder-level tests, and spec validation control
+            - **22 Test Suites**: Dedicated test coverage for each protocol, integration scenarios, validation features, and edge cases
+            - **Folder Tests Coverage**: 18 tests specifically for folder-level test extraction including deep nesting, empty folders, and mixed patterns
+            - **Edge Case Coverage**: Robust handling of malformed URLs, missing data, broken references, complex scenarios, and various Postman collection structures
+            - **Performance Tested**: Validated with large datasets, mixed protocol specifications, and deeply nested folder hierarchies
             - **Protocol Isolation**: Each protocol's parsing and matching logic is independently tested
-            - **Validation Testing**: 16 new tests for `--disable-spec-validation` flag covering unit and CLI integration
+            - **Validation Testing**: Comprehensive tests for `--disable-spec-validation` flag covering unit and CLI integration
             
             ---
             
